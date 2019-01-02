@@ -44,13 +44,13 @@ The next two lines are (finally!) genuine instructions for the VCS’s microproc
         sta $09
 ```
 
-Let's start with that last hexidecimal number. It turns out that `$09` happens to be the address of a hardware register in the VCS’s TIA chip that controls the background color used on the screen. The value you put into that address can range from $00 to $FF, although the right-most bit of that value is ignored. For example, `$CE` (`11001110` in binary) and $CF (`11001111`) will give you the same color.
+Let's start with that last hexadecimal number. It turns out that `$09` happens to be the address of a hardware register in the VCS’s TIA chip that controls the background color used on the screen. The value you put into that address can range from $00 to $FF, although the right-most bit of that value is ignored. For example, `$CE` (`11001110` in binary) and $CF (`11001111`) will give you the same color.
 
 The color you wind up with for any particular value depends on the type of TV set the console is plugged into. Sets that abide by the [NTSC color standard](https://en.wikipedia.org/wiki/NTSC "Wikipedia article on NTSC"), which was used on analog TVs throughout North America and Japan (plus a few other countries), will interpret $CE as a sort of lime green color. TVs using the [PAL color standard](https://en.wikipedia.org/wiki/PAL "Wikipedia article on PAL") (most of Europe, China, India, etc.) will display a lovely shade of lilac.
 
 Less common is the SECAM standard, which mainly applied to France and the Soviet Union back in the VCS's day. Only bits 1-3 were used for color values, giving you a limited palette of just eight colors. $CE will give you white, as will all values with an E or F as the last hexadecimal digit.
 
-Glenn Saunder's [color chart]{http://www.qotile.net/minidig/docs/tia_color.html "Charts of TIA colors on different standard sytems") is a good one to refer to, although there are several others out there in the internet.
+Glenn Saunder's [color chart]{http://www.qotile.net/minidig/docs/tia_color.html "Charts of TIA colors on different standard sytems") is a handy one to refer to, although there are plenty of other good ones out there in the internet.
 
 Most VCS emulators can display video using at least the NTSC and PAL standards, and they'll usually give you a way to switch between them. Many will even attempt to figure out what standard the cartridge being run was written for and automatically switch to it for you.
 
@@ -58,8 +58,8 @@ This code is so basic, it will almost certainly throw off that sort of automatic
 
 Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step, sort of like this (if we were using a high-level language):
 
-```C
-    System().bgColor = myColor;
+```Java
+    System.bgColor = myColor;
 ```
 
 Or better yet, like this:
@@ -73,9 +73,10 @@ But in Assembly World, this simple assignment is a **two-step** process that use
 * `sta` (store A) means "write whatever’s in the A register to the following address"
 
 In other words...
-
-	`lda #$CE`    <- Put the value $CE into register A
-	`sta $09`     <- Copy what’s in A (which is still $CD) into address $09
+```Assembly
+        lda #$CE    <- Put the value $CE into register A
+	sta $09     <- Copy what's in A (which is still $CE) into address $09
+```
 
 There is no assembly language instruction that directly loads an arbitrary value into an arbitrary address. While that may seem weird (or even annoying) at first, it’s not too different from using copy and paste on your computer. Think of the A register as the "clipboard". First you copy to the clipboard with `lda`, then you paste from the clipboard with `sta`.
 
