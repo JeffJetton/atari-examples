@@ -14,7 +14,7 @@ We can simulate the process of building a cartridge and sticking it into a real 
 
 Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") piece-by-piece and talk about what’s going on...
 
-###Lines 1 and 2
+##Lines 1 and 2
 
 ```assembly
 processor 6502
@@ -23,21 +23,25 @@ org  $F000
 
 The first two lines are instructions to the compiler and don’t generate any actual code that will be run on the 2600. These sorts of instructions are pseudo-ops (literally, “fake operations”).
 
-We're telling the compiler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand. The 2600 actually used the less-expensive 6507 chip, which is basically the 6502 in a smaller form with fewer pins, and thus with certain capabilities blocked from use. Nonetheless, the 6507 can read and carry out any code the 6502 can, even if some of the instructions don’t wind up doing anything. (Think of it like an automated power strip that has tape over some of the outlets. It can still respond to commands to switch any of the outlets on and off, even the blocked ones you can’t plug a lamp into.)
-The org pseudo-op sets the origin address of the code that follows. When the assembler compiles your code, it constantly keeps track of the destination address of each byte of compiled code. By which I mean the address that the system running the code will use to find each particular byte. I used italics because that’s an important distinction! While the first instruction in our code will actually live in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the 2600 will actually see it as the 61,441st byte in its world. Which means that the 2600 will have to use address $F000 to access that so-called “first” byte, due to the way the cartridge ROM is mapped. By setting our origin to $F000, we let the compiler know the address at which the next bit of code will ultimately be found by the 2600, and subsequently where all the following bits of code will wind up too. We’ll soon see why that’s important...
+The `processor` instruction tells the compiler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand. The production version of the Atari VCS actually used the less-expensive 6507 chip, which is basically the 6502 in a smaller form with fewer pins, and thus with certain capabilities blocked from use. Nonetheless, the 6507 can read and carry out any code the 6502 can, even if some of the instructions don’t wind up doing anything. (Think of it like an automated power strip that has tape over some of the outlets. It can still respond to commands to switch any of the outlets on and off, even the blocked ones you can’t plug a lamp into.)
+
+The `org` pseudo-op sets the *origin* address of the code that follows. When the assembler compiles your code, it constantly keeps track of the destination address of each byte of compiled code. By which I mean the address that *the system running the code* will use to find each particular byte. I used italics because that’s an important distinction! While the first instruction in our code will actually live in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the VCS will actually see it as the 61,441st byte in its world. Which means that the VCS will have to use address $F000 to access that so-called “first” byte, due to the way the cartridge ROM is mapped. By setting our origin to `$F000`, we let the compiler know the address at which the next bit of code will ultimately be found by the microprocessor, and subsequently where all the following bits of code will wind up too. We’ll soon see why that’s important...
 
 By the way, I put a blank line between those two lines of code, but that’s just for clarity. You don’t have to separate them like that.
 
-Also, I’m indenting the instructions by exactly eight spaces, which is another thing you technically don’t have to do. It helps with readability, as we shall see later. But if you want to be a rebel, you can enter the lines flush left, or indent them with fewer/more spaces. The assembler will still compile the code just fine. (Don’t use tabs though. The compiler hates tabs…)
-
-Lines 3 and 4
+##Lines 3 and 4
 
 The next two lines are (finally!) genuine instructions for the 2600’s microprocessor:
 
+```assembly
 	lda #$CD
 	sta $09
+```
 
-It turns out that $09 happens to be the address of a hardware register in the 2600’s TIA chip that controls the background color used on the screen. You can put values ranging from $00 to $FF there, instantly changing the displayed color to one of 256 choices. $00 is black and $FF is white, but in between are all sorts of shades. $CD represents purple (????).
+CONTINUE REVIEW FROM HERE...
+
+
+It turns out that `$09` happens to be the address of a hardware register in the VCS’s TIA chip that controls the background color used on the screen. You can put values ranging from $00 to $FF there, instantly changing the displayed color to one of 256 choices. $00 is black and $FF is white, but in between are all sorts of shades. $CD represents purple (????).
 
 I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into the background color register address in one step, sort of like this:
 

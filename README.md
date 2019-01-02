@@ -16,9 +16,9 @@ Enjoy!
    * What You Should Know to Start
    * Enough Assembly to be Dangerous
    * Addressing the Topic of Addresses
-1. Bare-Bones Programs
-   * Specifying Color on the VCS
+1. A Very Bare-Bones Program
    * bbones1.asm
+1. Refining the Bare-Bones Program
    * bbones2.asm
    * bbones3.asm
 1. Rudimentary Ouput Using Playfield Graphics
