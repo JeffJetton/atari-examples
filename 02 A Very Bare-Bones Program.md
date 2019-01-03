@@ -122,6 +122,17 @@ The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target addre
 
 But recall that the 6507 is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. We really could put anything in the last two bytes of address space. It doesn’t matter. The chip will never receive an interrupt and this address information will never be used. We do have to put something here though, so we might as well just reiterate the address of the beginning of our main program.
 
-## The Next Step
+## A Quick Review
 
-That's about all that can be said about these few lines of code. Next, we'll take advantage of some compiler features to spiff these lines up a little bit!
+* Out of the eight lines of code in this program, most are just instructions to the compiler:
+   1. We tell it what microprocessor family we're targeting
+   1. We tell it the expected address of the first byte of instructions
+   1. We wind up with a couple of words of special address data, which we have it place at the very top of the address space for us
+* Only three of the lines are actually telling the VCS what to do:
+   1. Load a value into the A register (our "clipboard")
+   1. Store that value into the address that controls the background color
+   1. Go back and keep doing it over and over
+
+Pretty simple, eh? 
+
+Next, we'll take advantage of some compiler features to spiff these lines up a little bit!
