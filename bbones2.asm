@@ -1,9 +1,6 @@
 ; In dasm (and most other assemblers) comments look like this
 ; They start with a semicolon and continue to the end of the line
 
-; From here on out, we're indenting instructions by some consistent
-; number of spaces, to leave room for identifier text on the left
-
        processor 6502
 
 ; Create a new symbol (COLUBK) that "equates" to value $09
