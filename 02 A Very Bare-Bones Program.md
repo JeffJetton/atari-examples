@@ -44,11 +44,11 @@ The next two lines are (finally!) genuine instructions for the VCS’s microproc
         sta $09
 ```
 
-Let's start with that last hexadecimal number. It turns out that `$09` happens to be the address of a hardware register in the VCS’s TIA chip that controls the background color used on the screen. The value you put into that address can range from $00 to $FF, although the right-most bit of that value is ignored. For example, `$CE` (`11001110` in binary) and $CF (`11001111`) will give you the same color.
+Let's start with that last hexadecimal number. It turns out that `$09` happens to be the address of a hardware register in the VCS’s TIA chip that controls the background color used on the screen. The value you put into that address can range from `$00` to `$FF`, although the right-most bit of that value is ignored. For example, `$CE` (`11001110` in binary) and `$CF` (`11001111`) will give you the same color.
 
 The color you wind up with for any particular value depends on the type of TV set the console is plugged into. Sets that abide by the [NTSC color standard](https://en.wikipedia.org/wiki/NTSC "Wikipedia article on NTSC"), which was used on analog TVs throughout North America and Japan (plus a few other countries), will interpret $CE as a sort of lime green color. TVs using the [PAL color standard](https://en.wikipedia.org/wiki/PAL "Wikipedia article on PAL") (most of Europe, China, India, etc.) will display a lovely shade of lilac.
 
-Less common is the SECAM standard, which mainly applied to France and the Soviet Union back in the VCS's day. Only bits 1-3 were used for color values, giving you a limited palette of just eight colors. $CE will give you white, as will all values with an E or F as the last hexadecimal digit.
+Less common is the SECAM standard, which mainly applied to France and the Soviet Union back in the VCS's day. Only bits 1-3 were used for color values, giving you a limited palette of just eight colors. `$CE` will give you white, as will all values with an E or F as the last hexadecimal digit.
 
 Glenn Saunder's [color chart]{http://www.qotile.net/minidig/docs/tia_color.html "Charts of TIA colors on different standard sytems") is a handy one to refer to, although there are plenty of other good ones out there in the internet.
 
@@ -72,52 +72,56 @@ But in Assembly World, this simple assignment is a **two-step** process that use
 * `lda` (load A) means "load the A register with this next value"
 * `sta` (store A) means "write whatever’s in the A register to the following address"
 
-In other words...
-```Assembly
-        lda #$CE    <- Put the value $CE into register A
-	sta $09     <- Copy what's in A (which is still $CE) into address $09
-```
+Specifically, in our program:
+* `lda #$CE`    <- Put the value `$CE` into register A
+* `sta $09`    <- Copy what's in A (which is still `$CE`) into address `$09`
 
-There is no assembly language instruction that directly loads an arbitrary value into an arbitrary address. While that may seem weird (or even annoying) at first, it’s not too different from using copy and paste on your computer. Think of the A register as the "clipboard". First you copy to the clipboard with `lda`, then you paste from the clipboard with `sta`.
+There is no assembly language instruction that directly loads an arbitrary value into an arbitrary address. While that may seem weird (or even annoying) at first, it’s not too different from using copy and paste on your computer. **Think of the A register as the "clipboard"**. First you copy to the clipboard with `lda`, then you paste from the clipboard with `sta`.
 
-[STOPPING POINT]
+And just as you can paste the same text into your word processing document in multiple places as long as you don’t overwrite what’s on the clipboard with another copy (or cut), you can store the same value into multiple addresses as long as you don’t change what’s in A.
 
-And just as you can paste the same thing into your word processing document multiple times as long as you don’t overwrite what’s on the clipboard with another copy (or cut), you can store the same thing into multiple addresses as long as you don’t change what’s in A. We’ll rely on that fact at least once in all but the first couple of programs in this book.
-
-What’s up with the # in front of the $CD? By default, lda will load the value that’s found at the address you provide. If we typed the instruction as lda $CD, without the all-important pound symbol, we would be telling the 2600 to grab whatever value happens to be at address $CD and copy it into A.
-
-A lot of the time that’s exactly what you want, but in this case it isn’t. We can override that default behavior by using the pound symbol prefix. It’s shorthand for “don’t look at this address to find the value… use this actual value!”
+What’s up with the `#` in front of the `$CD`? By default, lda will load the value that’s found at the address you provide. If we typed the instruction as `lda $CE`, without the all-important pound symbol, we would be telling the microprocessor to grab *whatever value happens to be at address `$CE`* and copy that value into A. The pound symbol is shorthand for “don’t look at this address to find the value… use this actual value!”
 
 This is an important thing to remember, and you probably will remember it but still make the mistake anyway an embarrassingly large number of times, leading to more frustrating bugs that you’ll want to admit. Join the club.
 
-Line 5
+## Line 5
 
-Next we have a “jump” instruction. If you grew up writing old-school BASIC, you can think of it as a GOTO statement, although it’s limited in a way that we’ll talk about later.
+Next we have a “jump” instruction. If you grew up writing old-school BASIC, you can think of it as a GOTO statement.
 
-     jmp $F000
+```assembly
+        jmp $F000
+```
 
-In this case, we’re telling the processor to “jump” to address $F000, which we know to be the first byte of our program. The result is an endless loop. We set the background color, then we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
+In this case, we’re telling the processor to “jump” to address `$F000`, which we know to be the first byte of our program. The result is an endless loop. After we first set the background color, we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
 
-You might be familiar with Edsger Dijkstra’s famous 1968 polemic against this sort of jumping around, titled “Go To Statement Considered Harmful”. He wasn’t wrong--you can really get yourself into a tangled mess if you’re not careful. But it’s worth noting that he specifically allowed for an exception when it came to low-level programming. Probably because, well, without those high-level-language luxuries like delimited code blocks, what other choice do we have?
+You might be familiar with Edsger Dijkstra’s famous 1968 polemic against this sort of jumping around, titled “[Go To Statement Considered Harmful](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html "Text of original Dijkstra letter")”. He wasn’t wrong--you can really get yourself into a tangled mess if you’re not careful. But it’s worth noting that he specifically allowed for an exception when it came to low-level programming. Probably because, well, without those high-level-language luxuries like delimited code blocks, what other choice do we have?
 
-Lines 6-8
+## Lines 6-8
 
 We wind everything up with another “origin” command, followed by two identical lines of interesting code:
 
-	org $FFFC
-	.word $F000
-	.word $F000
+```assembly
+        org $FFFC
+        .word $F000
+        .word $F000
+```
 
 Wait, didn’t we already set the address origin? Why do it again?
 
-It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the 2600) does when it is powered on is try to pull in data from the highest four bytes it is capable of addressing.
+It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the second-highest "word" (two-byte value) it can address.
 
-The bytes found at address $FFFC and $FFFD are put together into a single, two-byte value that tells the chip the address at which it should look to start executing the main portion of code. Remember, the 6502 and 6507 are general-purpose chips, which have no way of knowing that they’re currently installed in a video game that maps its cartridge data to $F000-$FFFF. This mechanism allows us to tell it where it needs to go in order to kick this whole party off:  To the beginning of our code, which we know is found at address $F000.
+Those two bytes found at address `$FFFC` and `$FFFD` are put together into a single, two-byte value that tells the chip the address at which it should look to start executing the main portion of code. Remember, the 6502 and 6507 are general-purpose chips, which have no way of knowing that they’re currently installed in a video game that maps its cartridge data to $F000-$FFFF. This mechanism allows us to tell it where it needs to go in order to kick this whole party off:  To the beginning of our code, which we know is found at address `$F000`.
 
-The last two bytes, at $FFFE and $FFFF, combine to form another address. This tells the chip where it should jump to in the case of an event known as an “interrupt”. Think of an interrupt as some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
+By setting the origin to `$FFFC`, we're telling the compiler that the next byte it "assembles" for us should live at that address location. Remember that it knows where the *first* instruction was supposed to live (due to the first `org` we used), and it has been quietly keeping track of the locations of every byte it has assembled since then. This second `org` will cause it to generate as many new bytes as it needs to (all with value of zero) so that the *next* bytes start where we tell it at `$FFFC`. Thus, we ensure that the reset address we specify next winds up exactly where it should be.
+
+The `.word` code is not a microprocessor instruction, but rather a directive to the compiler to just write the following word (two-byte value) to the assembled binary file "as is". You can also specify single bytes with the (you guessed it!) `.byte` directive.
+
+(Trivia Corner: We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. It sort of defeats the purpose of using an assembler, but it's possible!)
+
+The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. Think of an interrupt as some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
 
 But recall that the 6507 is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. We really could put anything in the last two bytes of address space. It doesn’t matter. The chip will never receive an interrupt and this address information will never be used. We do have to put something here though, so we might as well just reiterate the address of the beginning of our main program.
 
-Interestingly, most Atari games were written with a line of code near the beginning of the program that instructed the chip to explicitly shut off all interrupt responses. This is completely unnecessary on the 6507, for the reasons mentioned above. Given the tight memory constraints the developers were always working with, it’s odd that they would waste even one byte on this sort of extravagance. I can only assume that it was out of concern that one day Atari might start building their consoles using 6502 chips, and they wanted to make sure that their cartridges would still work if that happened. (In fact, as the cost of making chips fell over the next several years, there was less and less reason for MOS to make the “bargain alternative” 6507 and it was eventually discontinued. Atari would indeed have had to switch over to the 6502 had they not eventually re-engineered the whole thing to use a custom in-house chip.) [Did the in-house chip respond to interrrupts?]
+## The Next Step
 
-Another important side-effect of that second org pseudo-op is that it “fills in” all the bytes between the last byte of code and the next one with zeros.
+That's about all that can be said about these few lines of code. Next, we'll take advantage of some compiler features to spiff these lines up a little bit!
