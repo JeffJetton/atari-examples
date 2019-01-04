@@ -44,7 +44,7 @@ Init    sta  $00,x
         lda #%10110111  ; <- Experiment by changing this value
         sta PF1
 
-InfLoop jmp InfLoop     ; Do it all over again...
+InfLoop jmp InfLoop     ; Just loop here forever
 
         org $FFFC
         .word Start
