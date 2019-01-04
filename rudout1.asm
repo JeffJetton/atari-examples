@@ -40,7 +40,7 @@ Init    sta  $00,x
         sta COLUPF
 
         ; Load A with the number we want
-		; and show it in the playfield
+        ; and show it in the playfield
         lda #%10110111  ; <- Experiment by changing this value
         sta PF1
 

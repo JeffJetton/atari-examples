@@ -41,7 +41,7 @@ Init    sta  $00,x
 
 ; What's 2 + 3?
         lda #2          ; Load A with 2
-		adc #3          ; Add 3 to whatever's in A
+        adc #3          ; Add 3 to whatever's in A
         sta PF1         ; Show the result (in binary)
 
 InfLoop jmp InfLoop
