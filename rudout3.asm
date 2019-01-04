@@ -46,14 +46,14 @@ Init    sta  $00,x
         lda #42         ; Load A with 42 (decimal)
         sta BasePay     ; Store contents of A in address BasePay
 		
-; We get a bonus of 4 rupees!
-        lda #4          ; Put 5 in A
+; We get a bonus of 64 rupees!
+Bonus   lda #64         ; Put 64 in A
         adc BasePay     ; Add the contents of BasePay to A
         sta PF1         ; Show the binary result
 
-InfLoop jmp InfLoop
+        jmp Bonus
 
-        org $FFFCw
+        org $FFFC
         .word Start
         .word Start
 

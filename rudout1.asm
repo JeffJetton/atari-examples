@@ -39,12 +39,13 @@ Init    sta  $00,x
         lda #MyPFCol
         sta COLUPF
 
+LoadA
         ; Load A with the number we want
         ; and show it in the playfield
         lda #%10110111  ; <- Experiment by changing this value
         sta PF1
 
-InfLoop jmp InfLoop     ; Just loop here forever
+        jmp LoadA       ; Do it all over again
 
         org $FFFC
         .word Start
