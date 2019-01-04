@@ -1,5 +1,7 @@
 # A Very Bare-Bones Program
 
+### Code file: [bbones1.asm](./bbones1.asm)
+
 Here’s an extremely basic program. How basic? If you built a cartridge containing this program and stuck in in a real VCS, you would see… well, just a colored screen (probably a sort of light purple color, but it depends on the TV set). You wouldn’t be able to do much other than look at it. Your joysticks wouldn’t work, for example.
 
 *Booooring!*
@@ -86,7 +88,7 @@ This is an important thing to remember, and you probably will remember it but st
 
 ## Line 5
 
-Next we have a “jump” instruction. If you grew up writing old-school BASIC, you can think of it as a GOTO statement.
+Next we have a “jump” instruction. If you grew up writing old-school BASIC or FORTAN, you can think of it as a GOTO statement.
 
 ```assembly
         jmp $F000
@@ -95,6 +97,10 @@ Next we have a “jump” instruction. If you grew up writing old-school BASIC, 
 In this case, we’re telling the processor to “jump” to address `$F000`, which we know to be the first byte of our program. The result is an endless loop. After we first set the background color, we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
 
 You might be familiar with Edsger Dijkstra’s famous 1968 polemic against this sort of jumping around, titled “[Go To Statement Considered Harmful](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html "Text of original Dijkstra letter")”. He wasn’t wrong--you can really get yourself into a tangled mess if you’re not careful. But it’s worth noting that he specifically allowed for an exception when it came to low-level programming. Probably because, well, without those high-level-language luxuries like delimited code blocks, what other choice do we have?
+
+On a regular computer, a programs would simply exit to the operating system when it finishes. But here *there is no operating system*! if we didn't include some sort of looping construct here, execution would simply continue on past the parts of the cartridge ROM that we've explicitly written code for, causing things to quickly get... weird. And not in a good way.
+
+Bottom line: All VCS programs should to implement some sort of main loop.
 
 ## Lines 6-8
 
@@ -125,13 +131,13 @@ But recall that the 6507 is a “feature limited” version of the 6502. It does
 ## A Quick Review
 
 * Out of the eight lines of code in this program, most are just instructions to the compiler:
-   1. We tell it what microprocessor family we're targeting
-   1. We tell it the expected address of the first byte of instructions
-   1. We wind up with a couple of words of special address data, which we have it place at the very top of the address space for us
+   * We tell it what microprocessor family we're targeting
+   * We then tell it the expected address of the first byte of instructions
+   * Finally, we wind up with a couple of words of special address data, which we have it place at the very end of address space for us
 * Only three of the lines are actually telling the VCS what to do:
-   1. Load a value into the A register (our "clipboard")
-   1. Store that value into the address that controls the background color
-   1. Go back and keep doing it over and over
+   * Load a value into the A register (our "clipboard")
+   * Store that value into the address that controls the background color
+   * Go back and keep doing it over and over
 
 Pretty simple, eh? 
 
