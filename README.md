@@ -24,6 +24,7 @@ Enjoy!
 1. Rudimentary Ouput Using Playfield Graphics
    * rudout1.asm
    * rudout2.asm
+   * rudout3.asm
 1. Rudimentary Input From the Joystick and Console
    * rudin1.asm
    * rudin2.asm
