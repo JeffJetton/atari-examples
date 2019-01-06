@@ -76,7 +76,7 @@ And just as you can paste the same text into your word processing document in mu
 
 What’s up with the `#` in front of the `$CD`? By default, lda will load the value that’s found at the address you provide. If we typed the instruction as `lda $CE`, without the all-important pound symbol, we would be telling the microprocessor to grab *whatever value happens to be at address `$CE`* and copy that value into A. The pound symbol is shorthand for “don’t look at this address to find the value… use this actual value!”
 
-This is an important thing to remember, and you probably will remember it but still make the mistake anyway an embarrassingly large number of times, leading to more frustrating bugs that you’ll want to admit. Join the club.
+> **This is an important thing to remember**, and you probably *will* mostly remember it but still make the mistake anyway an embarrassingly large number of times, leading to more frustrating bugs that you’ll want to admit. Join the club.
 
 ## Line 5
 
@@ -88,7 +88,7 @@ Next we have a “jump” instruction. If you grew up writing old-school BASIC o
 
 In this case, we’re telling the processor to “jump” to address `$F000`, which we know to be the first byte of our program. The result is an endless loop. After we first set the background color, we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
 
-You might be familiar with Edsger Dijkstra’s famous 1968 polemic against this sort of jumping around, titled “[Go To Statement Considered Harmful](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html "Text of original Dijkstra letter")”. He wasn’t wrong--you can really get yourself into a tangled mess if you’re not careful. But it’s worth noting that he specifically allowed for an exception when it came to low-level programming. Probably because, well, without those high-level-language luxuries like delimited code blocks, what other choice do we have?
+> You might be familiar with Edsger Dijkstra’s famous 1968 polemic against this sort of jumping around, titled “[Go To Statement Considered Harmful](http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html "Text of original Dijkstra letter")”. He wasn’t wrong--you can really get yourself into a tangled mess if you’re not careful. But it’s worth noting that he specifically allowed for an exception when it came to low-level programming. Probably because, well, without those high-level-language luxuries like delimited code blocks, what other choice do we have?
 
 On a regular computer, a typical program simply exits to the operating system when it finishes. But here *there is no operating system*! if we didn't include some sort of looping construct here, execution would blithely continue on past the parts of the cartridge ROM that we've explicitly written code for, causing things to quickly get... weird. And not in a good way.
 
@@ -106,19 +106,19 @@ We wind everything up with another “origin” command, followed by two identic
 
 Wait, didn’t we already set the address origin? Why do it again?
 
-It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the second-highest "word" (two-byte value) it can address.
+It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the highest portion of memory it can address.
 
-Those two bytes found at address `$FFFC` and `$FFFD` are put together into a single, two-byte value that tells the chip the address at which it should look to start executing the main portion of code. Remember, the 6502 and 6507 are general-purpose chips, which have no way of knowing that they’re currently installed in a video game that maps its cartridge data to $F000-$FFFF. This mechanism allows us to tell it where it needs to go in order to kick this whole party off:  To the beginning of our code, which we know is found at address `$F000`.
+The bytes found at addresses `$FFFC` and `$FFFD` are combined together into a single, two-byte value (four hexadecimal digits) that tells the chip the address at which it should look to start executing the main portion of code. We know, of course, that it's found at address `$F000`.
 
-By setting the origin to `$FFFC`, we're telling the compiler that the next byte it "assembles" for us should live at that address location. Remember that it knows where the *first* instruction was supposed to live (due to the first `org` we used), and it has been quietly keeping track of the locations of every byte it has assembled since then. This second `org` will cause it to generate as many new bytes as it needs to (all with value of zero) so that the *next* bytes start where we tell it at `$FFFC`. Thus, we ensure that the reset address we specify next winds up exactly where it should be.
+By updating our origin to `$FFFC` in the code, we're telling the compiler that the next byte it "assembles" for us should live at that address location. Remember that it knows where the *first* instruction was supposed to live (due to the first `org` we used), and it has been quietly keeping track of the locations of every byte it has assembled since then. This second `org` will cause it to generate as many new bytes as it needs to (all with value of zero) so that the *next* bytes start where we tell it at `$FFFC`. Thus, we ensure that the reset address we specify winds up exactly where it should be.
 
 The `.word` code is not a microprocessor instruction, but rather a directive to the compiler to just write the following word (two-byte value) to the assembled binary file "as is". You can also specify single bytes with the (you guessed it!) `.byte` directive.
 
-(Trivia Corner: We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. It sort of defeats the purpose of using an assembler, but it's possible!)
+> Trivia Corner: We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. It sort of defeats the purpose of using an assembler, but it's possible!)
 
 The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. Think of an interrupt as some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
 
-But recall that the 6507 is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. We really could put anything in the last two bytes of address space. It doesn’t matter. The chip will never receive an interrupt and this address information will never be used. We do have to put something here though, so we might as well just reiterate the address of the beginning of our main program.
+However the 6507 chip used in the VCS is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. We really could put anything in the last two bytes of address space. It doesn’t matter. Our program will never receive an interrupt and this address information will never be used. We do have to put *something* here though, so we might as well just reiterate the address of the beginning of our main program.
 
 ## A Quick Review
 
