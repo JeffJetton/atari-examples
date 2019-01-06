@@ -1,21 +1,13 @@
-# A Very Bare-Bones Program
+# Bare-Bones Program #1
 
-#### Code file: [bbones1.asm](./bbones1.asm)
+* **Code file: [bbones1.asm](./bbones1.asm "Link to source code file for Bare-Bones Program #1")**
+* ([Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAFT8Igq1AQECAwSpzoUJTADw%2FwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB4EHAQHAPAA8A%3D%3D) "Link to in-browser emulation of Bare-Bones Program #1"))
 
-Here’s an extremely basic program. How basic? If you built a cartridge containing this program and stuck in in a real VCS, you would see… well, just a colored screen (probably a sort of light purple color, but it depends on the TV set). You wouldn’t be able to do much other than look at it. Your joysticks wouldn’t work, for example.
+Here’s an extremely basic program. How basic? It just displays a solid-colored screen (either light purple or light green, depending on the type of TV the emulator is simulating). You can't do much other than look at it. Your joysticks won’t work, for example.
 
 *Booooring!*
 
 But for a first program, it’ll do.
-
-We can simulate the process of building a cartridge and sticking it into a real VCS by following these steps:
-
-1. Type the code into a text editor to create a text file. (Or you could just download the code from here. I think it's more helpful, when learning, to actually type in everything yourself though. It makes you think about each line of code a bit more.)
-2. Invoke the assembler, telling it which file to read in and what to call the compiled binary file that comes out:
-   * `dasm bbones1.asm -f3 -obbones1.bin`
-      * The `-f` flag determines the binary output formet. You always want `-f3` for a VCS binary file.
-      * The `-o` flag lets you provide the name of the output file. If you leave it off, the file will be named `a.out`
-3. Run an Atari 2600 emulator, giving it the binary file to run as if it were a commercially-produced cartridge
 
 Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") piece-by-piece and talk about what’s going on...
 
@@ -142,3 +134,5 @@ But recall that the 6507 is a “feature limited” version of the 6502. It does
 Pretty simple, eh? 
 
 Next, we'll take advantage of some compiler features to spiff up our code a little bit!
+
+#### Next example: [bbones2.asm](.bbones2.md)
