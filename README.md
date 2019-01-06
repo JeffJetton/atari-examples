@@ -12,7 +12,7 @@ Enjoy!
 
 #### Assumptions:
 
-* You already have, or can install, a 6502 assembler (such as dasm) and an Atari VCS/2600 emulator (such as Stella)
+* You already have, or can install, a 6502 assembler (such as [dasm](http://dasm-dillon.sourceforge.net/ "dasm homepage")) and an Atari VCS/2600 emulator (such as [Stella](https://stella-emu.github.io/ "Home page for the Stella emulator"))
 * You already know, or can [figure out](http://blog.feltpad.net/dasm-on-mac-osx/
  "Mac OS X tips for building Atari binaries"), how to compile an assembly-language file into a binary, then run it in the emulator.
 * You will be *not* be running these examples on a real console and TV set.
@@ -25,18 +25,19 @@ Enjoy!
    * Enough Assembly to be Dangerous
    * Addressing the Topic of Addresses
 1. Bare-Bones Programs
-   * bbones1.asm
-   * bbones2.asm
-   * bbones3.asm
+   * `bbones1` [[code](./bbones1.asm)] [[documentation](./bbones1.md)]
+   * `bbones2` [[code](./bbones2.asm)] [[documentation](./bbones2.md)]
+   * `bbones3` [[code](./bbones3.asm)] [[documentation](./bbones3.md)]
 1. Rudimentary Ouput
-   * rudout1.asm
-   * rudout2.asm
-   * rudout3.asm
+   * `rudout1` [[code](./rudout1.asm)] [[documentation](./rudout1.md)]
+   * `rudout2` [[code](./rudout2.asm)] [[documentation](./rudout2.md)]
+   * `rudout3` [[code](./rudout3.asm)] [[documentation](./rudout3.md)]
 1. Rudimentary Input
-   * rudin1.asm
-   * rudin2.asm
+   * `rudin1` [[code](./rudin1.asm)] [[documentation](./rudin1.md)]
+   * `rudin2` [[code](./rudin2.asm)] [[documentation](./rudin2.md)]
 1. Dealing Properly with Scanlines
-   * scan1.asm
+   * `scan1` [[code](./scan1.asm)] [[documentation](./scan1.md)]
+   * `scan2`
 1. Displaying a Single Dot
 1. Making the Dot Move by Itself
 1. Controlling the Dot
