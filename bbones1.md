@@ -1,7 +1,7 @@
 # Bare-Bones Program #1
 
 * **Code file: [bbones1.asm](./bbones1.asm "Link to source code file for Bare-Bones Program #1")**
-* ([Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAFT8Igq1AQECAwSpzoUJTADw%2FwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB4EHAQHAPAA8A%3D%3D) "Link to in-browser emulation of Bare-Bones Program #1"))
+* ([Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAFT8Igq1AQECAwSpzoUJTADw%2FwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB4EHAQHAPAA8A%3D%3D "Link to in-browser emulation of Bare-Bones Program #1"))
 
 Here’s an extremely basic program. How basic? It just displays a solid-colored screen (either light purple or light green, depending on the type of TV the emulator is simulating). You can't do much other than look at it. Your joysticks won’t work, for example.
 
@@ -135,4 +135,4 @@ Pretty simple, eh?
 
 Next, we'll take advantage of some compiler features to spiff up our code a little bit!
 
-#### Next example: [bbones2.asm](.bbones2.md)
+#### Next example: [bbones2.asm](./bbones2.md)
