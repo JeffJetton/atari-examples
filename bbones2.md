@@ -6,7 +6,7 @@
 Not much new here. But we are now taking advantage of a couple of handy features of assembler programs:
 
 1. The ability to add comments, like any other civilized programming language
-   * In dasm (and most other compilers, but not all), comments start with a semi-colon and continue to the end of the line
+   * In dasm comments start with a semi-colon and continue to the end of the line
 1. The ability to define *symbols* or labels that we can use to name things
    * Symbol definitions start in the very first column, with no indenting
 
@@ -26,11 +26,9 @@ Same for our background color, which is different from the value used in the pre
 
 These equates are similar to constants you'd define in any other language, and they have the same benefits: More readble code that's easier to modify.
 
-If, for example, we 
+We could use nearly any name for these two equates we want. By convention, `COLUBK` is commonly used for the background color (more on that to come).
 
-
-
-## The Main Loop
+## The Rest of the Program
 
 ```assembly
 Start   lda #MyBGCol    ; Load a new color value into register A
@@ -40,6 +38,11 @@ Start   lda #MyBGCol    ; Load a new color value into register A
         sta COLUBK      ; Store A in whatever address COLUBK refers to
 
         jmp Start       ; Jump to whatever address Start refers to
+
+
+        org $FFFC
+        .word Start     ; Begin at the "Start" location when reset
+        .word Start     ; Use that same address for interrupts
 ```
 
 The processor instructions in our loop haven't really changed much. But we are marking our first `lda` with a label. There's no special meaning to the word `Start`--it's just what we decided to call that marker. We could've called it `Fred` for all the compiler cares.
@@ -47,7 +50,6 @@ The processor instructions in our loop haven't really changed much. But we are m
 The label just gives a name to a particular location in our code. We reference this name later in the jmp instruction instead of explicitly jumping to `$F000`. We also use the label in the last two lines. Like the equates, this adds a helpful layer of abstraction. We can change where our code is located or move things around by adding additional code in front of where we want to jump to (or start from), but not have to rewrite any of our other code. The compiler (which, remember, is keeping track of the addresses of every byte it compiles) will take care of everything for us.
 
 For the `lda` and `sta` instructions themselves, we're taking advantage of the equates we defined earlier. Note that we still have to "un-dereference" our color value with the `#`. As a reminder, without it, `lda` would try to load the contents of address `MyBGCol` instead of the actual value of `MyBGCol`.
-
 
 
 ## Review
