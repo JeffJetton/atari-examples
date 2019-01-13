@@ -5,11 +5,13 @@
 
 ; Create a new symbol (COLUBK) that "equates" to value $09
 COLUBK  equ $09
+; Do the same for our color value
+MyBGCol equ $3C
 
 
         org $F000
 
-Start   lda #$3C        ; Load a new color value into register A
+Start   lda #MyBGCol    ; Load a new color value into register A
                         ; Note that we've marked the location of this
                         ; instruction with the label "Start".
 
