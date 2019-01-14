@@ -1,3 +1,11 @@
+;-------------------------------------------------------
+;
+; Bare-Bones Program #3
+;
+; Initialize VCS memory and registers before starting
+;
+;-------------------------------------------------------
+
         processor 6502
 
 COLUBK  equ $09
@@ -7,7 +15,7 @@ MyBGCol equ $2A
 
 
 Start   sei         ; Prevent interrupts
-        cld         ; Clear decimal mode
+        cld         ; Clear BCD mode
         ldx  #$FF   ; Take the highest address in RAM...
         txs         ; ...and put it in the stack pointer
 
