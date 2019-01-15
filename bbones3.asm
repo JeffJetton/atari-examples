@@ -10,20 +10,34 @@
 
 COLUBK  equ $09
 MyBGCol equ $2A
+   
 
         org $F000
 
+; Basic set-up
 
 Start   sei         ; Prevent interrupts
-        cld         ; Clear BCD mode
-        ldx  #$FF   ; Take the highest address in RAM...
+        cld         ; Clear "decimal" mode
+        ldx #$FF    ; Take the highest address in RAM...
         txs         ; ...and put it in the stack pointer
 
-        lda  #0     ; Begin initialization
-Init    sta  0,x    ; Put A's zero into address $00 + X
-        dex         ; Decrement X
-        bne  Init   ; Loop as long as X isn't zero
-        sta  $00    ; A final zero into address $00
+
+; Initialize the "zero-page" (inefficient, for now)
+        
+        ldx #0      ; Use X for our index. Start at zero
+        
+Init    lda #0      ; Put a zero in the "clipboard"
+        sta  0,x    ; ...and store it at address $00 + X
+                    ; You can't just sta x !
+        inx         ; Increment X
+        
+        txa         ; Put current value of X into A
+        cmp #$FF    ; And compare it our end value
+        bne  Init   ; Branch (if that comparison
+                    ; resulted in) Not Equal
+        
+        lda #0      ; One final zero...
+        sta $FF     ; ...to store in the last address
 
 
 ; Set up the graphics, such as they are...
