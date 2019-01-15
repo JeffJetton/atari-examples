@@ -57,7 +57,7 @@ For the `lda` and `sta` instructions themselves, we're taking advantage of the e
 ## Review
 
 * Comments in assembly language start with `;`
-* We can (and should!) create symbols or labels for constant values and code locations
+* We can (and should!) create labels for constant values and code locations
 
 Next, we'll use a non-infinite loop to do some sorely-needed initialization...
 
