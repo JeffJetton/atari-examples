@@ -3,6 +3,8 @@
 ; Bare-Bones Program #3
 ;
 ; Initialize VCS memory and registers before starting
+; (In a style similar to how a high-level language
+; might do it)
 ;
 ;-------------------------------------------------------
 
@@ -24,11 +26,14 @@ Start   sei         ; Prevent interrupts
 
 ; Initialize the "zero-page" (inefficient, for now)
         
-        ldx #0      ; Use X for our index. Start at zero
+        ldx #0      ; Use X for the index of our current
+                    ; address. Start at zero.
+        ldy #0      ; Put a zero in Y. This is the zero
+                    ; we'll use to clear out addresses.
         
-Init    lda #0      ; Put a zero in the "clipboard"
-        sta  0,x    ; ...and store it at address $00 + X
-                    ; You can't just sta x !
+Init    sty  0,x    ; Store Y's zero into 0 offset by X
+                    ; (We can't just sty x... it has to
+                    ; be X relative to a base value)
         inx         ; Increment X
         
         txa         ; Put current value of X into A
@@ -36,8 +41,9 @@ Init    lda #0      ; Put a zero in the "clipboard"
         bne  Init   ; Branch (if that comparison
                     ; resulted in) Not Equal
         
-        lda #0      ; One final zero...
-        sta $FF     ; ...to store in the last address
+        sty 0      ; Final zero in the last address
+        
+        ; Init section takes 14 bytes and 3,067 cycles
 
 
 ; Set up the graphics, such as they are...
