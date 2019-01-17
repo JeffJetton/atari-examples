@@ -11,21 +11,20 @@
         include "macro.h"
 
 		
-; Color constants (NTSC)
-MyBGCol equ $06     ; Medium gray
-MyPFCol equ $46     ; Reddish-pink
+        ; Color constants
+MyBGCol equ $06
+MyPFCol equ $46
 
-; Define two memory locations
+        ; Define two memory locations
 Num1    equ $80
 Num2    equ $81
 
 
         org $F000
         
-        ; Standard initialization
 Start   CLEAN_START 
 
-        ; Set colors and playfield
+        ; Set colors
         lda #MyBGCol
         sta COLUBK
         lda #MyPFCol
