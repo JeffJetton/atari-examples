@@ -19,8 +19,8 @@ MyBGCol equ $D0
 
 Start   sei         ; Prevent interrupts
         cld         ; Clear "decimal" mode
-        ldx #$FF    ; Take the highest address in RAM...
-        txs         ; ...and put it in the stack pointer
+        ldx #$FF    ; Set the...
+        txs         ; ...stack pointer
 
 
 ; Initialize the "zero-page"
@@ -29,7 +29,7 @@ Start   sei         ; Prevent interrupts
                     ; The value in X is still $FF
                     ; from the above ldx instruction
                     
-        ; Our loop goes *backwards* from
+        ; Our loop goes backwards from
         ; $FF down to $00
 Init    sta  0,x    ; Put A's zero into address $00 + X
         dex         ; Decrement X
@@ -42,7 +42,7 @@ Init    sta  0,x    ; Put A's zero into address $00 + X
         ; and 1,022 cycles (33% faster)
 
 
-; Set up the graphics, such as they are...
+; Main loop
 
 SetTIA  lda #MyBGCol
         sta COLUBK
