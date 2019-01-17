@@ -36,7 +36,7 @@ Frame
         ; VSYNC, we just write 1 in the next-to-last bit
         ; to enable "vertical blanking" mode in VBLANK
         lda #2          ; Same as $%00000010 of course
-		sta VBLANK      ; Turn on blanking
+        sta VBLANK      ; Turn on blanking
 
         ; Now we turn on VSYNC for three lines, as before
         sta VSYNC       ; Register A still has the 2 in it
