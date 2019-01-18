@@ -77,7 +77,7 @@ Chunk1  sta WSYNC
         bne Chunk1
 
 
-        ; Set playfield bits and show for 8 lines, as before
+        ; Playfield for 8 lines, as before
         lda #%10011101
         sta PF0
         sta PF1
