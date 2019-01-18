@@ -21,11 +21,11 @@ Enjoy!
 ## Ordered List of Examples
 
 1. Bare-Bones Programs
-   * `bbones1` [[code](./bbones1.asm)] [[documentation](./bbones1.md)]
-   * `bbones2` [[code](./bbones2.asm)] [[documentation](./bbones2.md)]
-   * `bbones3` [[code](./bbones3.asm)] [[documentation](./bbones3.md)]
-   * `bbones4` [[code](./bbones4.asm)] [[documentation](./bbones4.md)]
-   * `bbones5` [[code](./bbones5.asm)] [[documentation](./bbones5.md)]
+   * `bbones1` [[code](./bbones/bbones1.asm)] [[documentation](./bbones/bbones1.md)]
+   * `bbones2` [[code](./bbones/bbones2.asm)] [[documentation](./bbones/bbones2.md)]
+   * `bbones3` [[code](./bbones/bbones3.asm)] [[documentation](./bbones/bbones3.md)]
+   * `bbones4` [[code](./bbones/bbones4.asm)] [[documentation](./bbones/bbones4.md)]
+   * `bbones5` [[code](./bbones/bbones5.asm)] [[documentation](./bbones/bbones5.md)]
 1. Rudimentary Ouput
    * `rudout1` [[code](./rudout1.asm)] [[documentation](./rudout1.md)]
    * `rudout2` [[code](./rudout2.asm)] [[documentation](./rudout2.md)]
