@@ -61,8 +61,10 @@ Frame
         sta VSYNC
 		
         
-; NTSC frames have a total of 262 scanlines. PAL systems have 312.
-; Either way, we'll divide the lines into three chunks:
+; NTSC frames last a total of 262 scanlines worth of time.
+; For PAL systems, it's 312. We've already used up three for
+; the VSYNC portion. We'll divide the remaining 259 (or 309)
+; into three chunks:
 		
         ; First, wait for 100 scanlines worth of time.
         ; During this period, the playfield registers are not set,
@@ -88,16 +90,16 @@ Chunk2  sta WSYNC
         bne Chunk2
 		
         ; Zero out the playfield registers
-        ; Using txa instead of lda #0 saves one whole byte of ROM!
-        txa
+        ; Note that X still contains zero at this point
+        txa             ; Transfer X to A
         sta PF0
         sta PF1
         sta PF2
 		
-        ; Wait around while the last 154 (NTSC) or
-        ; 204 (PAL) scanlines are drawn
-        ldx #154
-        ;ldx #204       ; Uncomment for PAL
+        ; Wait around while the last 151 (NTSC) or
+        ; 201 (PAL) scanlines are drawn
+        ldx #151
+        ;ldx #201       ; Uncomment for PAL
 Chunk3  sta WSYNC
         dex
         bne Chunk3
@@ -109,10 +111,7 @@ Chunk3  sta WSYNC
         .word Start
         .word Start
 		
-; What if you changed the chunk spacing by, for example, having
-; chunk 1 loop for 80 scanlines and chunk 3 loop for an additional
-; 20 scanline to make up for the difference?
-; How does that affect where the playfield is drawn?
+
 
 
 
