@@ -11,36 +11,41 @@
         include "macro.h"
 
 		
-; Color constants (NTSC)
-MyBGCol equ $06     ; Medium gray
-MyPFCol equ $46     ; Reddish-pink
+        ; Color constants
+MyBGCol equ $06
+MyPFCol equ $46
 
-; Define a memory location in RAM
-BasePay equ $80
+        ; Define two memory locations
+Num1    equ $80
+Num2    equ $81
 
 
         org $F000
         
-        ; Standard initialization
 Start   CLEAN_START 
 
-        ; Set colors and playfield
+        ; Set colors
         lda #MyBGCol
         sta COLUBK
         lda #MyPFCol
         sta COLUPF
 
-        ; Set our base pay "variable" to 42 rupees
-        lda #42         ; Load A with 42 (decimal)
-        sta BasePay     ; Store contents of A in address BasePay
+        ; Load first number into memory
+        lda #4          ; Load A with 2
+        sta Num1        ; Store contents of A in address Num1
+        
+        ; Load second number into memory
+        lda #5
+        sta Num2
 		
-        ; We get a bonus of 64 rupees!
-Bonus   lda #64         ; Put 64 in A
+        ; We can add 4 & 5 by referencing memory:
+        lda Num1        ; Put Num1 in A
         clc             ; ALWAYS clear carry before an add!
-        adc BasePay     ; Add the contents of BasePay to A
+        adc Num2        ; Add Num2 to A
         sta PF1         ; Show the binary result
 
-        jmp Bonus
+Endless nop
+        jmp Endless
 
         org $FFFC
         .word Start

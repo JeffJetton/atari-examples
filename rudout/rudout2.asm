@@ -13,9 +13,9 @@
         include "macro.h"
 
 		
-; Define some color constants (NTSC)
-MyBGCol equ $06     ; Medium gray
-MyPFCol equ $46     ; Reddish-pink
+        ; Color constants
+MyBGCol equ $06
+MyPFCol equ $46
 
 
         org $F000
@@ -23,7 +23,7 @@ MyPFCol equ $46     ; Reddish-pink
         ; Standard initialization
 Start   CLEAN_START 
 
-        ; Set colors and playfield
+        ; Set colors
         lda #MyBGCol
         sta COLUBK
         lda #MyPFCol
