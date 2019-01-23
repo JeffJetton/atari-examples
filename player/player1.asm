@@ -9,11 +9,11 @@
 ;---------------------------------------------------------------
 
         processor 6502
-        include vcs.h
-        include macro.h
+        include "../_includes/vcs.h"
+        include "../_includes/macro.h"
 
 		
-; Color contants
+        ; Color contants
 MyBGCol equ $00         ; Black for background
 MyP0Col equ $9A
 MyP1Col equ $2A
@@ -23,7 +23,7 @@ MyP1Col equ $2A
         org $F000
 Start   CLEAN_START
 
-; Set up colors for background and players
+        ; Set up colors for background and players
         lda #MyBGCol
         sta COLUBK
         lda #MyP0Col
@@ -46,11 +46,7 @@ Frame   sta VSYNC
         
         ; Uncomment this next block if the players overlap:
         ; sta RESP0
-        ; nop 0
-        ; nop 0
-        ; nop 0
-        ; nop 0
-        ; nop 0
+        ; SLEEP 50
         ; sta RESP1
 		
         ; Remainder of vertical blanking period
