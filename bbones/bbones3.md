@@ -15,8 +15,8 @@ On an emulator, this isn’t super-important. Typically, the microprocessor and 
    * This is not one of those situations. So we *really* want to make sure that BCD mode is off if we want addition and subtraction to behave as expected.
 1. Set the “stack pointer” to its highest value. We’ll talk more about this later, but for now, these are the two things to know:
    * The stack pointer marks the *bottom* of a special section of RAM called the "stack". This location can vary as the stack changes in size.
-   * Nearly every program you write will also be using RAM for storing what are essentially "variables".
-   * Since we don't want our variables area and the stack area to stomp all over each other, we'd prefer that the stack start out as far "out of our way" as possible.
+   * Nearly every program you write will **also** be using RAM for storing what are essentially variables.
+   * Since we don't want our variables area and the stack area to stomp all over each other, we'd prefer that the stack start out as far out of our way as possible.
 1. Set every register in the TIA chip to zero.
 1. Set every byte in RAM to zero.
 
@@ -48,11 +48,59 @@ Also notice that we’re not “storing” X in the stack pointer, but rather �
 
 ## Initializing the "Zero-Page"
 
-[explain zero page and clearing it out. Uses a loop to do the whole thing.]
+Due to the way the VCS maps all of its address locations, the various TIA registers, RAM areas, etc. that we need to clear out all happen to be found in the first 256 bytes of addressable space. Lucky for us, this "zero-page" (where a *page*, in this case, is a block of 256 bytes) can be handled very efficiently by the 6502 family.
 
 For our first stab at this, we'll use an approach similar to what you're probably used to in a high-level langauage. (Spoiler alert: We'll rewrite this in the next version.)
 
-[Code goes here]
+The basic steps (for now) are sort of like a FOR loop or a WHILE loop:
+
+1. Keep track of the current address location, starting at address zero.
+2. Write a zero to wherever our current address location is.
+3. Increment our current address to the next location.
+4. Have we gotten to the top (i.e., address $FF)?
+   * If so, exit the loop
+   * If not, go to step 2
+
+Note that the 6502 registers that we can use to keep track of our current address are only 8-bits in size. So we can't stop our loop when we *exceed* $FF. $FF is the largest value it can hold--we'll never get any higher than that. So we have to stop our loop when we *equal* $FF.
+
+Yes, that means we'll have one last step to do, where we clear out that last address at $FF.
+
+The assembly-language version of these steps looks like this:
+
+```assembly
+        ldx #0 
+        ldy #0
+        
+Init    sty  0,x
+        inx
+        
+        txa
+        cmp #$FF
+        bne  Init
+        
+        sty $FF
+```
+
+We're using the X register as our address pointer. Y just holds the zero that we'll write to the zero-page.
+
+At the beginning of the `Init` loop, we store the contents of Y (which is always zero) to wherever X is pointing. Well, actually we're writing it to address "zero plus X". There is no 6502 assembly instruction that simply stores a value to address X directly. But we can use X as an offset to some constant address. In this case, our constant is zero, so it's effectively a "store Y in address X" instruction when all is said and done.
+
+Next we check to see if we need to exit the loop. There is no "IF" statement in assembly. Like just about everything else in assembly, this simple "IF" logic takes multiple steps:
+
+1. Compare the contents of A to some value
+1. Do something based on what the results of that comparison were
+
+So that's what we do. We can't do a comparison on the X register--only the A register. So we first have to **T**ransfer **X** to **A**.
+
+Then we execute our comparison. This doesn't change any normal register contents, but it does set some "flags" (think of them as boolean variables) on the chip. These flags keep track of whether the most-recent math operation resulted in a zero, or in a negative number, or caused a mathematical "carry" to occur, and so on.
+
+Finally, we check the result of the comparison (by looking at whatever flags are now set) and act accordingly. In this case, we do a **B**ranch if the previous comparison found that the two values were **N**ot **E**qual. That keeps our loop running until X equals $FF.
+
+We wrap up with one last store of Y into the highest address of the zero-page (since the loop would've missed it).
+
+> **Note:** The comparison is actually a subtraction that throws away the result. If the values being compared (the contents of A and whatever value is being used as an argument to the `cmp` instruction) are equal, then the subtraction operation results in a zero, which flips on the zero flag. If the values are different, the subtraction will *not* result in a zero (thus turning *off* the zero flag) but might do other things such as set the negative flag or the carry flag.
+
+The instructions in this init routine take up 14 bytes of ROM and take over 3,000 cycles to execute. Not bad--but **we can do better!** Stay tuned...
 
 
 
@@ -60,7 +108,7 @@ For our first stab at this, we'll use an approach similar to what you're probabl
 
 * It's (usually) a good idea to start your VCS programs by initializing the system and clearing out the TIA and RAM.
 * In addition to the Accumulator, the registers on the 6502-family microprocessors include X, Y, and SP (the stack pointer).
-* "Branching" is the assembly-language equivalent of a conditional ("if") statement (although the logic will typically be "flipped around")
+* "Branching" is the assembly-language equivalent of a conditional ("if") statement. It relies on previous operations setting various "flags".
 
 Next, we'll re-write that zero-page loop to a more efficient form that's more idiomatic to assembly language.
 
