@@ -1,12 +1,13 @@
 ;---------------------------------------------------------------
-;
-; A "more correct" way to deal with scanlines
+; 
+; A "more correct" way to deal with scanlines. Takes the
+; vertical blank and overscan periods into account.
 ; 
 ;---------------------------------------------------------------
 
         processor 6502
-        include vcs.h
-        include macro.h
+        include ../_includes/vcs.h
+        include ../_includes/macro.h
 
 
         ; Define colors
@@ -67,11 +68,11 @@ Blank   sta WSYNC
 
 
 ; The standard "visible" portion of the frame is 192 scanlines
-; for NTSC (242 for PAL). So our three chunks are different now:
+; for NTSC (242 for PAL).
 
-        ; Wait for 50 scanlines of visible screen before
-        ; displaying anything (other than the background)
-        ldx #50
+        ; Wait for, oh. let's say 40 scanlines of visible screen
+        ; before displaying anything (other than the background)
+        ldx #40
 Chunk1  sta WSYNC
         dex
         bne Chunk1
@@ -96,16 +97,19 @@ Chunk2  sta WSYNC
         sta PF2
 
         ; Bottom chunk of frame fills out the remaining
-        ; visible scanlines
-        lda #134
-        ;lda #184       ; Uncomment for PAL
+        ; visible scanlines (192 - 40 - 8 = 144)
+        lda #144
+        ;lda #194       ; Uncomment for PAL
         tax
 Chunk3  sta WSYNC
         dex
         bne Chunk3
 
-        ; We wrap up by turning the beam off again and doing
-        ; a final 30 scanlines of "overscan"
+        ; We wrap up by turning the beam OFF again and doing
+        ; a final 30 scanlines of "overscan". This leaves
+        ; some empty space at the bottom of the image, to
+        ; accomodate differences in where the CRT TVs of the
+        ; VCS-era would stop displaying.
         lda #2
         sta VBLANK
         ldx #30
@@ -114,7 +118,7 @@ OverSc  sta WSYNC
         bne OverSc
 	
 
-        jmp Frame
+        jmp Frame   
         
 
         org $FFFC
