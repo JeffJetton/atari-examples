@@ -6,8 +6,8 @@
 ;---------------------------------------------------------------
 
         processor 6502
-        include ../_includes/vcs.h
-        include ../_includes/macro.h
+        include "../_includes/vcs.h"
+        include "../_includes/macro.h"
 
 
         ; Define colors
