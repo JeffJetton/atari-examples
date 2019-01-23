@@ -9,8 +9,8 @@
         processor 6502
 
         ; Standard includes
-        include "vcs.h"
-        include "macro.h"
+        include "../_includes/vcs.h"
+        include "../_includes/macro.h"
 
 		
         ; Define some color constants
