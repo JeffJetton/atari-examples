@@ -10,8 +10,8 @@
 ;---------------------------------------------------------------
 
         processor 6502
-        include vcs.h
-        include macro.h
+        include "../_includes/vcs.h"
+        include "../_includes/macro.h"
 
 
         ; Define our colors
@@ -83,7 +83,7 @@ Chunk1  sta WSYNC       ; Wait for horizontal sync at end of line
         sta PF1
         sta PF2
 		
-        ; Display the playfield for 8 lines
+        ; Continue displaying the playfield for 8 lines
         ldx #8
 Chunk2  sta WSYNC
         dex

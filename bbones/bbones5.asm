@@ -8,8 +8,12 @@
 
         processor 6502
 
-        include "../inc/vcs.h"     ; Standard definitions for VCS code
-        include "../inc/macro.h"   ; Useful common macros
+        include "../_includes/vcs.h"    ; Standard definitions
+                                        ; for VCS code
+
+        include "../_includes/macro.h"  ; Useful common macros
+
+
 
 MyBGCol equ $88
 

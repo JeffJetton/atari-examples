@@ -16,10 +16,10 @@ MyBGCol equ $2A
 
         org $F000
 
-; Basic set-up
+; Basic set up
 
 Start   sei         ; Prevent interrupts
-        cld         ; Clear "decimal" mode
+        cld         ; Clear "binary-coded decimal" mode
         ldx #$FF    ; Take the highest address in RAM...
         txs         ; ...and put it in the stack pointer
 
