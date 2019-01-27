@@ -27,20 +27,20 @@ Enjoy!
    * `bbones4` [[code](./bbones/bbones4.asm)]
    * `bbones5` [[code](./bbones/bbones5.asm)]
 1. Rudimentary Ouput
-   * `rudout1` [[code](.rudout/rudout1.asm)]
-   * `rudout2` [[code](.rudout/rudout2.asm)]
-   * `rudout3` [[code](.rudout/rudout3.asm)]
-   * `rudout4` [[code](.rudout/rudout4.asm)]
-   * `rudout5` [[code](.rudout/rudout5.asm)]
+   * `rudout1` [[code](./rudout/rudout1.asm)]
+   * `rudout2` [[code](./rudout/rudout2.asm)]
+   * `rudout3` [[code](./rudout/rudout3.asm)]
+   * `rudout4` [[code](./rudout/rudout4.asm)]
+   * `rudout5` [[code](./rudout/rudout5.asm)]
 1. Rudimentary Input
-   * `rudin1` [[code](.rudin/rudin1.asm)]
-   * `rudin2` [[code](.rudin/rudin2.asm)]
+   * `rudin1` [[code](./rudin/rudin1.asm)]
+   * `rudin2` [[code](./rudin/rudin2.asm)]
 1. Dealing Properly with Scanlines
-   * `scan1` [[code](.scan/scan1.asm)]
-   * `scan2` [[code](.scan/scan2.asm)]
+   * `scan1` [[code](./scan/scan1.asm)]
+   * `scan2` [[code](./scan/scan2.asm)]
 1. Displaying a Player Graphic at a Specific Vertical Position
-   * `player1` [[code](.player/player1.asm)]
-   * `player2` [[code](.player/player2.asm)]
-   * `player3` [[code](.player/player3.asm)]
-   * `player4` [[code](.player/player4.asm)]
+   * `player1` [[code](./player/player1.asm)]
+   * `player2` [[code](./player/player2.asm)]
+   * `player3` [[code](./player/player3.asm)]
+   * `player4` [[code](./player/player4.asm)]
 
