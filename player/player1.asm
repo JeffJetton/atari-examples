@@ -1,10 +1,11 @@
 ;---------------------------------------------------------------
 ;
-; Using the "player" registers
-;
-; Blue player shows joystick input
-;
-; Orange player shows console switch settings
+; Using the "player" registers, part I
+; 
+; Basic output:
+; 
+;     Blue player shows joystick input
+;     Orange player shows console switch settings
 ; 
 ;---------------------------------------------------------------
 
