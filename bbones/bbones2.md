@@ -24,9 +24,9 @@ The `equ` instruction is for the compiler only. The 6502 doesn't know anything a
 
 Same for our background color (which is different from the value used in the previous example, just so you can tell you're running a different program!)
 
-These equates are similar to constants you'd define in any other language, and they have the same benefits: More readble code that's easier to modify.
+These equates are similar to constants you'd define in any other language, and they have the same benefits: More readable code that's easier to modify.
 
-We could use nearly any name for these two equates we want. By convention, `COLUBK` is used for the background color (more on that to come).
+We could use nearly any name for these two equates we want. By convention, `COLUBK` is used for the background color register (more on that to come).
 
 ## The Rest of the Program
 
@@ -45,13 +45,15 @@ Start   lda #MyBGCol    ; Load a new color value into register A
         .word Start     ; Use that same address for interrupts
 ```
 
-The processor instructions in our loop haven't really changed much. But we are marking our first `lda` with a label. There's no special meaning to the word `Start`. We could've called it `Fred` for all the compiler cares.
+The processor instructions in our loop haven't really changed much. But we are marking our first `lda` with a label. There's nothing special about the word `Start`. We could've called it `Begin` or `RESET` or `Fred` for all the compiler cares.
 
 In this situation the label isn't identifying a value that we provide, but rather the address of a particular location in our code, which the compiler figures out for us. Specifically, we're marking the location of the `lda`--the beginning of our program. We reference this name later in the `jmp` instruction instead of explicitly jumping to `$F000`. We also use the label in the last two lines.
 
 Like the equates, this adds a helpful layer of abstraction. We can change our code origin or add additional code in front of where we want to jump to or start from, but not have to rewrite any of our various destination addresses. The compiler (which, remember, is keeping track of the addresses of every byte it compiles) will take care of everything for us.
 
-For the `lda` and `sta` instructions themselves, we're taking advantage of the equates we defined earlier. Note that we still have to "un-dereference" our color value with the `#`. As a reminder, without it, `lda` would try to load the contents of address `MyBGCol` instead of the actual value of `MyBGCol`.
+For the `lda` and `sta` instructions themselves, we're taking advantage of the equates we defined earlier. We get the same effect as if we directly typed in `lda #$3C` and `sta $09`, but it makes the code a lot easier to work with and read.
+
+Note that we still have to "un-dereference" our color value with the `#`. As a reminder, without it, `lda` would try to load the contents of address `MyBGCol` instead of the actual value of `MyBGCol`.
 
 
 ## Review
