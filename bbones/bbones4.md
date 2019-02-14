@@ -62,4 +62,4 @@ Hey, don't knock it! When you're facing the memory contraints of the VCS, those 
 
 Next, we'll use the `INCLUDE` pseudo-op to tidy things up even more...
 
-#### Next example: [bbones5.asm](./bbones4.md)
+#### Next example: [bbones5.asm](./bbones5.md)
