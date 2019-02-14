@@ -1,8 +1,9 @@
 # Bare-Bones Program #3
 
 * **Code file: [bbones3.asm](./bbones3.asm "Link to source code file for bbones3.asm")**
-* [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAFTPFAojAQECAwSpPIUJTADw%2FwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB4EHAQHAPAA8A%3D%3D "Link to in-browser emulation of bbones2.asm") at 8bitworkshop
-
+* [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAGV%2FXxT7AQECAwR42KL%2FmqIAoACUAOiKyf%2FQ%2BIQAqSqFCUwT8P8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQeBBcA8ADw "Link to in-browser emulation of bbones3.asm") at 8bitworkshop
+  
+  
 Confession time: We haven’t been being good 2600 citizens so far. There’s a certain amount of setup we really should be doing at the beginning of our program. Like a trained chef who gets his or her [*mise en place*](https://en.wikipedia.org/wiki/Mise_en_place "Wikipedia article on mise en place") arranged before cooking a meal, we have to prepare our virtual working area and make sure everything is in its place.
 
 On an emulator, this isn’t super-important. Typically, the microprocessor and the entire memory map start as a blank slate. But on a real 2600, those registers and addresses could be set to who-knows-what. That can cause trouble down the line. We need to take care of things by doing this:
@@ -92,23 +93,23 @@ Next we check to see if we need to exit the loop. There is no "IF" statement in 
 
 So that's what we do. We can't do a comparison on the X register--only the A register. So we first have to **T**ransfer **X** to **A**.
 
-Then we execute our comparison. This doesn't change any normal register contents, but it does set some "flags" (think of them as boolean variables) on the chip. These flags keep track of whether the most-recent math operation resulted in a zero, or in a negative number, or caused a mathematical "carry" to occur, and so on.
+Then we execute our comparison. This doesn't change any normal register contents, but it does set some "flags" (think of them as global boolean variables) on the chip. These flags keep track of whether the most-recent math operation resulted in a zero, or in a negative number, and/or caused a mathematical "carry" to occur, and a few other things like that.
 
 Finally, we check the result of the comparison (by looking at whatever flags are now set) and act accordingly. In this case, we do a **B**ranch if the previous comparison found that the two values were **N**ot **E**qual. That keeps our loop running until X equals $FF.
 
 We wrap up with one last store of Y into the highest address of the zero-page (since the loop would've missed it).
 
-> **Note:** The comparison is actually a subtraction that throws away the result. If the values being compared (the contents of A and whatever value is being used as an argument to the `cmp` instruction) are equal, then the subtraction operation results in a zero, which flips on the zero flag. If the values are different, the subtraction will *not* result in a zero (thus turning *off* the zero flag) but might do other things such as set the negative flag or the carry flag.
+> **Note:** The comparison is actually a subtraction that throws away the result. If the values being compared (the contents of A and whatever value is being used as an argument to the `cmp` instruction) are equal, then the subtraction operation results in a zero, which flips on the zero flag. If the values are different, the subtraction will *not* result in a zero (thus turning *off* the zero flag) but might do other things such as set the negative flag or the carry flag. The `bne` instruction just has to look at the zero flag to know whether to branch or not.
 
-The instructions in this init routine take up 14 bytes of ROM and take over 3,000 cycles to execute. Not bad--but **we can do better!** Stay tuned...
+The code in this init routine takes up 14 bytes of ROM and take over 3,000 cycles to execute. Not bad--but **we can do better!** Stay tuned...
 
 
 
 ## Review
 
 * It's (usually) a good idea to start your VCS programs by initializing the system and clearing out the TIA and RAM.
-* In addition to the Accumulator, the registers on the 6502-family microprocessors include X, Y, and SP (the stack pointer).
-* "Branching" is the assembly-language equivalent of a conditional ("if") statement. It relies on previous operations setting various "flags".
+* In addition to the Accumulator, the registers on the 6502-family microprocessors include X, Y, and SP (the stack pointer). There are also several "flags" that keep track of various things.
+* "Branching" is the assembly-language equivalent of a conditional ("if") statement. It relies on previous operations setting certain flags.
 
 Next, we'll re-write that zero-page loop to a more efficient form that's more idiomatic to assembly language.
 
