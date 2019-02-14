@@ -22,7 +22,7 @@ Start   sei
         txs
 ```
 
-As before, we're going to use X as the index of our loop. But we'll *count down from $FF to $00* instead of going up from $00 to $FF. The nice thing is that, after the above lines of code have finished executing, X is still set to `$FF`, which happens to be exactly where we want it to be!
+As before, we're going to use X as the index of our loop. But we'll count *down* from `$FF` to `$00` instead of going up from `$00` to `$FF`. The nice thing is that, after the above lines of code have finished executing, X is still set to `$FF`, which happens to be exactly where we want it to be!
 
 
 
@@ -46,9 +46,13 @@ Init    sta  0,x    ; Put A's zero into address $00 + X
         sta  $00    ; A final zero into address $00
 ```
 
-Notice that we no longer need any sort of "compare" step now. We also don't need the step of transferring the contents of X into A in order to do the comparison. That saves five bytes of code. When you're facing the memory contraints of the VCS, those five measly bytes are considered a pretty big win!
+Notice that we no longer need any sort of "compare" step now. We also don't need the step of transferring the contents of X into A in order to do the comparison. That saves five bytes of code.
 
-> Note: We also save quite a few processor cycles too, of course. But you'll fine that, in most VCS programming situations, memory is more precious than time.
+Wait, really? All that trouble for five measly bytes? 
+
+Hey, don't knock it! When you're facing the memory contraints of the VCS, those five bytes are considered a pretty big win!
+
+> Spoiler Alert: We also save a lot of processor cycles too. In later examples, when we get more and more into the precise timing required for graphics display, that sort of time savings will become very important.
 
 
 
