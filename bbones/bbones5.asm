@@ -8,10 +8,10 @@
 
         processor 6502
 
-        include "../_includes/vcs.h"    ; Standard definitions
-                                        ; for VCS code
+        include vcs.h   ; Standard definitions
+                        ; for VCS code
 
-        include "../_includes/macro.h"  ; Useful common macros
+        include macro.h ; Useful common macros
 
 
 

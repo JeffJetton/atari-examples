@@ -21,7 +21,7 @@ Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") 
 
 The first two lines are instructions to the compiler and don’t generate any actual code that will be run on the VCS. These sorts of instructions are often called pseudo-ops (literally, “fake operations”).
 
-In assembly code, you usually indent your instructions by some consistent number of spaces (eight, sixteen, etc.) We'll see why that's helpful when we refine this program later.
+In assembly code, you typically indent your instructions by some consistent number of spaces. Many compilers require at least one space, but you'll want more than that (eight is common) to leave room for the descriptive labels that we'll eventually add.
 
 The `processor` instruction tells the compiler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand.
 
@@ -33,17 +33,17 @@ By the way, I put a blank line between those two lines of code, but that’s jus
 
 ## Let’s Address the Topic of Addresses
 
-If you’ve programmed much, particularly if you’ve programmed “close to the metal” in a language such as C, you might be used to thinking of **addresses** as referring to memory locations in RAM somwhere.
+If you’re new to assembler but have programmed in higher-level languages, you might be used to thinking of **addresses** as referring to memory locations in RAM somwhere.
 
 To an extent, it can work that way on the VCS too. Addresses can indeed refer to some sort of memory. It’s not entirely straightforward, since that memory might reside in either RAM (on the 2600 itself) or ROM (in the cartridge), but hey... memory is memory, right? We’re still operating in a zone of some comfort here.
 
-But really, addresses actually refer to various hardware access points. Writing a value to such an address actually pokes a bit of external hardware--which can be RAM but can also be another IC chip on the motherboard--and tells it to do something or behave in a certain way. Conversely, reading from one of these addresses gives your program the ability to respond to something the hardware is telling you to do or to discover a state the hardware is telling you it’s in.
+But really, addresses can refer to any sort of hardware access point. Writing a value to an address just pokes a bit of external hardware--which can be RAM but can also be, say, another IC chip on the motherboard--and tells it to do something or behave in a certain way. Conversely, reading from one of these addresses gives your program the ability to respond to something the hardware is telling you to do or to discover a state the hardware is telling you it’s in.
 
-On the VCS, some addresses are mapped to memory (ROM and RAM) and other addresses are mapped to other hardware.
+On the VCS, some addresses are *mapped* (connected), to memory (ROM and RAM) and some addresses are mapped to other hardware, such as the "TIA"--the VCS's video chip.
 
-So no longer are we thinking of the word address as if it had the same sense as “street address”. It’s more like how it's used in “The Gettysburg Address”. It’s a method of *communication*.
+Let that sink in a bit.
 
-Let that sink in a bit. (Personally, it took me a bit of getting used to.)
+I don't give it a second thought now, and maybe it's obvious to you right off the bat. But for me, when I was starting out, this idea of addresses referring to things other tham memory took a bit of getting used to.
 
 ## Lines 3 and 4
 
@@ -54,26 +54,26 @@ The next two lines are (finally!) genuine instructions for the VCS’s microproc
         sta $09
 ```
 
-Let's start with that last hexadecimal number. (In dasm, hex numbers must start with $). It turns out that `$09` is an address on the TIA chip that controls the background color used on the screen. The 6502 can change the current color by simply sending some value (one byte) into that address.
+Let's start with that last hexadecimal number. (In dasm, hex numbers must start with $). It turns out that `$09` is an address on the TIA video chip that controls the background color used on the screen. The 6502 can change the current color by simply sending some value (one byte) into that address.
 
 The color you wind up with for any particular value depends on the type of TV set the console is plugged into. For example, sets that abide by the [NTSC color standard](https://en.wikipedia.org/wiki/NTSC "Wikipedia article on NTSC"), which was used on analog TVs throughout North America and Japan (plus a few other countries), will interpret `$CE` as a sort of lime green color. TVs using the [PAL color standard](https://en.wikipedia.org/wiki/PAL "Wikipedia article on PAL") (most of Europe, China, India, etc.) will instead display a lovely shade of lilac. There's also the SECAM standard, but it's not as common for Atari games.
 
 > **Fun Fact:** Most VCS emulators can display video using at least the NTSC and PAL standards, and they'll usually give you a way to switch between them. Many will even attempt to figure out what standard the cartridge being run was written for and automatically switch to it for you. This example program is so basic, it will almost certainly throw off that sort of automatic detection. So you might see a message like "AUTO: FAILED", and it will default to one or the other.
 
-Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step, sort of like this (if we were using a high-level language):
+Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step. I'm used to assignment statement looking something like this:
 
 ```Java
     System.bgColor = myColor;
 ```
 
-Or better yet, like this:
+Or mabye this:
 ```Python
     SetBGColor(myColor)
 ```
 
 But in Assembly World, this simple assignment is a **two-step** process.
 
-On the 6502 chip itself are a few specialized, internal storage areas called *registers*. The main register is the *Accumulator*, or just "A". It only holds one byte, but it's where most of the work is done.
+On the 6502 chip itself are a few specialized, internal storage areas called *registers*. The main register is the *Accumulator*, often just called "A". It only holds one byte, but it's where most of the work is done.
 
 To assign a value to an address, we must use A as a temporary holding tank for the value:
 
@@ -92,7 +92,7 @@ What’s up with the `#` in front of the `$CD`? By default, lda will load the va
 
 (If you've wrangled pointers or references in languages like C, you can think of the arguments in assembly as being dereferenced by default. The `#` turns off the dereferencing.)
 
-> **Note:** The difference between specifying a direct *value* for an operation and specifying an *address* for an operation is important thing to remember! Lots of frustrating bugs are due to making a mistake here.
+> **Note:** The difference between specifying a direct *value* for an operation and specifying an *address* for an operation is important thing to remember! Lots of frustrating bugs are due to leaving out a`#` or not having one where it should be.
 
 ## Line 5
 
@@ -102,7 +102,9 @@ Next we have a “jump” instruction. If you grew up writing old-school BASIC o
         jmp $F000
 ```
 
-In this case, we’re telling the processor to “jump” to address `$F000`, which we know to be the first byte of our program. The result is an endless loop. After we first set the background color, we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
+In this case, we’re telling the processor to “jump” to address `$F000`, which we know to be the first byte of our program (because that's how we set things up with that first `org` instruction).
+
+As you'd probably guess, the result is an endless loop. After we first set the background color, we go back and needlessly set it to the same thing over and over again, until someone has mercy on the processor’s Sisyphean struggle and switches off the power (or quits the emulator).
 
 On a regular computer, a typical program simply exits to the operating system when it finishes. But here *there is no operating system*! if we didn't include some sort of looping construct here, execution would blithely continue on past the parts of the cartridge ROM that we've explicitly written code for, causing things to quickly get... weird. And not in a good way.
 
@@ -118,7 +120,7 @@ We wind everything up with another “origin” command, followed by two identic
         .word $F000
 ```
 
-Wait, didn’t we already set the address origin? Why do it again?
+Wait, didn’t we already set the address origin? Why do it again? To a different address?
 
 It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the highest portion of memory it can address.
 
@@ -128,11 +130,11 @@ By updating our origin to `$FFFC` in the code, we're telling the compiler that t
 
 The `.word` code is not a microprocessor instruction, but rather a directive to the compiler to just write the following word (two-byte value) to the assembled binary file "as is". You can also specify single bytes with the (you guessed it!) `.byte` directive.
 
-> **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. It sort of defeats the purpose of using an assembler, but it's possible!)
+> **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. Instead of `jmp`, we could type `.byte $4C` and get the same compiled program. It sort of defeats the main purpose of using an assembler, but it's possible!
 
-The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. Think of an interrupt as some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
+The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
 
-But, as mentioned above, the chip used in the VCS is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. We really could put anything in the last two bytes of address space. It doesn’t matter. Our program will never receive an interrupt and this address information will never be used. We do have to put *something* here though, so we might as well just reiterate the address of the beginning of our main program.
+But, as mentioned above, the chip used in the VCS is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. So it doesn't really matter what we put in the last two bytes of address space. We do have to put *something* there though, so we might as well just reiterate the address of the beginning of our main program.
 
 ## A Quick Review
 
