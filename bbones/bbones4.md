@@ -3,9 +3,8 @@
 * **Code file: [bbones4.asm](./bbones4.asm "Link to source code file for bbones4.asm")**
 * [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAGGrqxObAQECAwR42KL%2FmqkAlQDK0PuFAKnQhQlMDvD%2FBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHgQb%2FwDwAPA%3D "Link to in-browser emulation of bbones4.asm") at 8bitworkshop
 
-In the previous example, we used a fairly straightforward loop to assign zeros to a chunk of address space. It worked just fine, but no native-speaker of assembly language would ever write it that way.
 
-Sort of like a beginning French student who says "Je suis faim!" (I am hunger!) instead of the idiomatically-correct French phrase "J'ai faim" (I *have* hunger!), we were obviously trying to take a pattern we knew from one language and apply it to a language where it doesn't *quite* fit.
+In the previous example, we used a fairly straightforward loop to assign zeros to a chunk of address space. It worked just fine, but it was a bit clunky--the result of trying to apply a familiar, high-level pattern to a low-level language where it doesn't *quite* fit perfectly.
 
 So in this example we'll do the same initialization using a more "assembly style" looping method. It's not too different. The key is to **loop backwards**!
 
