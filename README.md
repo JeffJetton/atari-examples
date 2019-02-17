@@ -25,7 +25,7 @@ Enjoy!
    * `bbones2` [[code](./bbones/bbones2.asm)] [[documentation](./bbones/bbones2.md)]
    * `bbones3` [[code](./bbones/bbones3.asm)] [[documentation](./bbones/bbones3.md)]
    * `bbones4` [[code](./bbones/bbones4.asm)] [[documentation](./bbones/bbones4.md)]
-   * `bbones5` [[code](./bbones/bbones5.asm)]
+   * `bbones5` [[code](./bbones/bbones5.asm)] [documentation](./bbones/bbones5.md)]
 1. Rudimentary Ouput
    * `rudout1` [[code](./rudout/rudout1.asm)]
    * `rudout2` [[code](./rudout/rudout2.asm)]
