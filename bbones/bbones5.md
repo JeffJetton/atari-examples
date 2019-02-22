@@ -83,9 +83,6 @@ Rather than specifying the exact address value for each label, as we've been doi
     * It tells the compiler that the following is an "uninitialized segment"
     * That is, the bytes being labeled are *mere definintions*., used only for reference by our program. These definitions, by themselves, will not generate any machine code or create any data in the output .bin file.
     
-> **Fun Fact #1:** If the `seg.u` were omitted, the compiler would actually output bytes (set to zero) for each `ds 1` defined here. Furthermore, the binary file would go from 4K in size to a whopping 64K. Why? Well, the next `org` the compiler would see after this one would be the `org $F000` at the top of our program. Recall from the [discussion of bbones1](./bbones.md) that this jump in origin address will cause the compiler output as many extra bytes as necessary to "fill in" the space required to get to new location.
-
-
 Of course, you don't *have* to use `vcs.h`. There's nothing stopping you from creating your own file and even using different labels for all the addresses. But `vcs.h` has become the de facto standard for VCS programmers for many years, and the address names have been standard [since at least 1979](https://archive.org/details/StellaProgrammersGuide).
 
 > **Fun Fact:** The comments in `vcs.h` also identify the bits that are used for each register. Note that `COLUBK` only pays attention to the highest seven bits--bit zero is ignored. As far as it's concerned, there's no difference between $00 and $01, for example. You effectively have only 128 unique values to set the color
