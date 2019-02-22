@@ -85,7 +85,7 @@ Rather than specifying the exact address value for each label, as we've been doi
     
 Of course, you don't *have* to use `vcs.h`. There's nothing stopping you from creating your own file and even using different labels for all the addresses. But `vcs.h` has become the de facto standard for VCS programmers for many years, and the address names have been standard [since at least 1979](https://archive.org/details/StellaProgrammersGuide).
 
-> **Fun Fact:** The comments in `vcs.h` also identify the bits that are used for each register. Note that `COLUBK` only pays attention to the highest seven bits--bit zero is ignored. As far as it's concerned, there's no difference between $00 and $01, for example. You effectively have only 128 unique values to set the color
+> **Fun Fact:** The comments in `vcs.h` also identify the bits that are used for each register. Note that `COLUBK` only pays attention to the highest seven bits--bit zero is ignored. As far as it's concerned, there's no difference between $00 and $01, for example. You effectively have only 128 unique values to set the color. (If you did the extra credit back in bbones2, well, know you know why there's no difference between $3C and $3D!)
 
 
 ## macro.h
