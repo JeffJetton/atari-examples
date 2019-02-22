@@ -51,7 +51,7 @@ The examples in this project do not specify paths in the `include` statements, s
 
 The `vcs.h` file is why we no longer have to explicitly define `COLUBK`, or any of the other VCS registers we'll use later. That's all taken care of for us in this file.
 
-It also serves as a handy reference to the available registers, as you can see from this excerpt:
+It also serves as a handy reference to the available registers, as you can see if you [take a look at it yourself](../_includes/vcs.h). Here's an excerpt:
 
 ```assembly
 			SEG.U TIA_REGISTERS_WRITE
@@ -77,24 +77,62 @@ Rather than specifying the exact address value for each label, as we've been doi
 * The statements then only specify *size* of each address being defined. The compiler keeps track of which address each of these will correspond to.
     * `ds` means "define space"
     * The number after it gives the amount of space, in bytes
+    * By the time the compiler gets to the `COLUBK` label we know and love, it knows to assign it to the next available byte, which is `$09`
+    * (The comments on each line also show the resulting address, but that was put there by the creaters of the file, for human readability. The compiler didn't generate that and doesn't pay attention to it.)
 * The whole thing is kicked off with a `seg.u` instruction. **This is very important!**
     * It tells the compiler that the following is an "uninitialized segment"
     * That is, the bytes being labeled are *mere definintions*., used only for reference by our program. These definitions, by themselves, will not generate any machine code or create any data in the output .bin file.
     
-> **Fun Fact:** If the `seg.u` were omitted, the compiler would actually output bytes (set to zero) for each `ds 1` defined here. Furthermore, the binary file would go from 4K in size to a whopping 64K. Why? Well, the next `org` the compiler would see after this one would be the `org $F000` at the top of our program. Recall from the [discussion of bbones1](./bbones.md) that this jump in origin address will cause the compiler output as many extra bytes as necessary to "fill in" the space required to get to new location.
+> **Fun Fact #1:** If the `seg.u` were omitted, the compiler would actually output bytes (set to zero) for each `ds 1` defined here. Furthermore, the binary file would go from 4K in size to a whopping 64K. Why? Well, the next `org` the compiler would see after this one would be the `org $F000` at the top of our program. Recall from the [discussion of bbones1](./bbones.md) that this jump in origin address will cause the compiler output as many extra bytes as necessary to "fill in" the space required to get to new location.
+
 
 Of course, you don't *have* to use `vcs.h`. There's nothing stopping you from creating your own file and even using different labels for all the addresses. But `vcs.h` has become the de facto standard for VCS programmers for many years, and the address names have been standard [since at least 1979](https://archive.org/details/StellaProgrammersGuide).
 
+> **Fun Fact:** The comments in `vcs.h` also identify the bits that are used for each register. Note that `COLUBK` only pays attention to the highest seven bits--bit zero is ignored. As far as it's concerned, there's no difference between $00 and $01, for example. You effectively have only 128 unique values to set the color
 
 
 ## macro.h
 
-Under construction
+I'm afraid that, after all that work creating two different versions of the initialization loop, we're now going to replace the whole thing *one more time*. Only this time, we're going to use a **macro**.
 
+```assembly
+Start   CLEAN_START
+```
+
+You might've used macros in other languages, and they work similarly here. They're not too different from equates and address location marker labels, except instead of replacing a symbol with a single value, macros replace it with a chunk of pre-defined program code.
+
+Most programs need an initialization section, and it's not going to be very different each time, so using a macro here makes perfect sense.
+
+The `macro.h` file contains a handful of useful, reusable macros, including a nifty one written by [Andrew Davie](http://atariage.com/forums/user/214-andrew-davie/) called `CLEAN_START`. It performs an improved version of the initialization we've already been doing:
+
+* Disables interrupts
+* Turns off decimal mode
+* Clears out the entire "Zero Page" (TIA registers and RAM)
+* Resets the stack pointer
+* Sets all the microprocessor registers (A, X, and Y) to zero
+
+Amazingly, it manages to do all this using two fewer bytes that the bbones4 init routine (and therefore seven fewer bytes than the version in bbones3).
+
+
+
+## Extra Credit
+
+1. If you're using dasm, add the `-s` option when you compile this program.
+    * For example: `dasm bbones5.asm -f3 -obbones5.bin -sbbones5.sym`
+    * This generates a **symbol file**, showing the values of every label (symbol) encountered by the compiler, in both your main .asm file and any included files. It also shows whether the symbol actually wound up being referenced in the final program.
+    * Open the file with any text editor to verify that the `vcs.h` labels wound up getting assigned the address that the comments say they would. Which ones did our program refer to?
+    * Are the symbols we used in the main program (`MyBGCol`, `Start`, and `SetTIA`) there? Do they have the values you'd expect them to have?
+2. Create a version of `vcs.h` that is missing the line with the `seg.u` instruction and include this file in your program instead of the normal version.
+    * What happens? Will the program run in an emulator?
+    * How big is the resulting .bin file? (Note that our .bin files have only been 4K up until now!) Refer back to the [discussion of lines 6-8](./bbones1.md) in bbones1 for a clue as to what's going on here...
+3. Open `macro.h` and check out what other macros are available in there.
+
+
+--------
 
 ## Review
 
-* Includes let you reuse common definitions and macros
+* Including external files lets you reuse common definitions and macros
 * The `vcs.h` file (for address labels) and `macro.h` file (for commonly-used functions) are the de facto standards for VCS programmers
 * And don't forget these important points from previous discussions:
     * Simple assignment in assembly is often a two-step process:
