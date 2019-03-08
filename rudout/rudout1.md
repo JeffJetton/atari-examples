@@ -1,27 +1,70 @@
 # Rudimentary Output #1
 
 * **Code file: [rudout1.asm](./rudout1.asm)**
-* [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAF8fVxEPAQECAwR42KIAiqjKmkjQ%2B6mIhQlMC%2FD%2FBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHgQbBAIA8ADw "Link to in-browser emulation of bbones4.asm") at 8bitworkshop
+* [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAGUphBP6AQECAwR42KIAiqjKmkjQ%2B6kGhQmpRoUIqbeFDkwT8P8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQeBBcA8ADw "Link to in-browser emulation of bbones1.asm") at 8bitworkshop
 
 
-My well-worn (autographed!) copy of Kernigan and Ritchie's *The C Programming Language* starts out with an example program that displays the message "hello, world!" That started a tradition that's been held by just about every programming language tutorial since then. Heck, there's even [a GitHub repository](https://github.com/leachim6/hello-world) that is trying to collect "Hello, World!" examples in every conceivable computer language.
+The VCS has no built-in text display capability, which makes the traditional "Hello, World!" program a surprisingly complicated undertaking. So for now, we're just going to display a single number on the screen. And we're doing to represent that number in **binary**, using vertical lines.
 
-The VCS has no built-in text display functionality though.
+Sure, it's not much. But it's easy to do, and it *is* technically output!
+
+> **Fun Fact:** You can think of this as a throwback to early personal computers like the [Altair 8800](http://oldcomputers.net/altair-8800.html). It didn't initially ship with a monitor, so users would commonly read binary output via rows of red LED lights on the front panel.
+
+
+## The Playfield
+
+The VCS was originally designed to run the sorts of games that were popular in arcades at the time, in particular, [Pong](https://en.wikipedia.org/wiki/Pong) and [Tank](https://en.wikipedia.org/wiki/Tank_(video_game)). You can plainly see the legacy of those games in the features they decided to put into the TIA video chip.
+
+For example, some of the TIA registers are dedicated to drawing the "playfield"--static game backgrounds, often of a single color, such as the court walls in [Video Olympics](https://en.wikipedia.org/wiki/Video_Olympics) and the various mazes and clouds in [Combat](https://en.wikipedia.org/wiki/Combat_(Atari_2600)). Of course, like all the display registers we'll learn about, you can use them for something other than their intended purpose. Starting with some of the very first VCS cartridges, for example, programmers would often rig the playfield to show the score at the top or bottom of the screen.
+
+The playfield divides the screen evenly into 40 vertical columns, which can be either set (showing the playfield color) or not set (allowing the background color to "show through"). Actually, you can only *directly* set the left 20 columns. The right half is designed to either repeat (copy) or reflect (mirror) whatever the left side is showing.
+
+To set the pattern of the 20 left-side columns, you simply write values to three registers. Where a bit is 1, the playfield is drawn. Where a bit is 0, it's not:
+
+* `PF0` - Playfield 0
+    * Draws the first four columns
+    * Only the four highest (leftmost) bits of the register are used
+    * Columns are drawn "backwards" compared to the bit pattern. That is, the first column is set by the fifth bit, the second column by the sixth bit, and so on.
+* `PF1` - Playfield 1
+    * Draws columns 5-12
+    * The displayed columns match the bit pattern
+* `PF2` - Playfield 2
+    * Draws the final eight columns
+    * Bits are "backwards" like PF0
+
+Two other registers control how the playfield pattern is displayed:
+
+* `COLUPF` - Playfield Color
+    * Works just like the background color register (`COLUBK`)
+* `CTRLPF` - Playfield Control
+    * Set the first bit to one to turn on mirror/reflection mode
+    * Other bits do other things that we don't need to worry about right now...
+    
+## Wait a Second...
+
+Am I really saying that the playfield just lets you define **vertical columns**? Just solid lines running all the way down the screen?
+
+Technically, yes. That's all it knows how to do: Draw or not draw at certain specific horizontal positions. It's like someone with a rubber stamp, mindlessly stamping the same pattern all the way down a piece of paper.
+
+Displaying anything more complicated than that involves re-setting the registers *very* quickly, while each frame of the screen is being drawn! In other words, you have to wait until the doofus with a rubber stamp raises his arm, then quickly grab the stamp and replace it with a different one before he ever notices.
+
+> **Fun Fact:** Programming graphics on the VCS is really, really weird.
 
 
 
 
+```{assembly}
+        MyPFCol equ $46
+```
+
+And later, we're 
 ## Extra Credit
 
-1. If you're using dasm, add the `-s` option when you compile this program.
-    * For example: `dasm bbones5.asm -f3 -obbones5.bin -sbbones5.sym`
-    * This generates a **symbol file**, showing the values of every label (symbol) encountered by the compiler, in both your main .asm file and any included files. It also shows whether the symbol actually wound up being referenced in the final program.
-    * Open the file with any text editor to verify that the `vcs.h` labels wound up getting assigned the address that the comments say they would. Which ones did our program refer to?
-    * Are the symbols we used in the main program (`MyBGCol`, `Start`, and `SetTIA`) there? Do they have the values you'd expect them to have?
-2. Create a version of `vcs.h` that is missing the line with the `seg.u` instruction and include this file in your program instead of the normal version.
-    * What happens? Will the program run in an emulator?
-    * How big is the resulting .bin file? (Note that our .bin files have only been 4K up until now!) Refer back to the [discussion of lines 6-8](./bbones1.md) in bbones1 for a clue as to what's going on here...
-3. Open `macro.h` and check out what other macros are available in there.
+1. As mentioned above, the default behavior for the playfield is to simply copy the left side over onto the right side. But you also have the option to *reflect* a mirror-image of the left side instead, by setting bit zero of the `CTRLPF` (**C**on**TR**o**L P**lay**F**ield) register.
+    * Try it out!
+2. Try loading A with different numbers. (Be sure to use the `#` symbol!)
+    * For example, how does (decimal) 10 look compared to 20? Compared to 5?
+    * What does this demonstrate about multiplying and dividing binary numbers by two?
 
 
 

@@ -9,8 +9,8 @@
         processor 6502
 
         ; Standard includes
-        include "../_includes/vcs.h"
-        include "../_includes/macro.h"
+        include vcs.h
+        include macro.h
 
 		
         ; Define some color constants
@@ -31,7 +31,7 @@ Start   CLEAN_START
 
 LoadA   ; Load A with the number we want
         ; and show it in a playfield
-        lda #%10110111  ; <- Experiment by changing this value
+        lda #%10110111
         sta PF1
 
         jmp LoadA       ; Do it all over again
