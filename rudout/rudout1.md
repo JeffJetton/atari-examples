@@ -15,9 +15,11 @@ Sure, it's not much. But it's easy to do, and it *is* technically output!
 
 The VCS was originally designed to run the sorts of games that were popular in arcades at the time, in particular, [Pong](https://en.wikipedia.org/wiki/Pong) and [Tank](https://en.wikipedia.org/wiki/Tank_(video_game)). You can plainly see the legacy of those games in the features they decided to put into the TIA video chip.
 
-For example, some of the TIA registers are dedicated to drawing the "playfield"--static game backgrounds, often of a single color, such as the court walls in [Video Olympics](https://en.wikipedia.org/wiki/Video_Olympics) and the various mazes and clouds in [Combat](https://en.wikipedia.org/wiki/Combat_(Atari_2600)). Of course, like all the display registers we'll learn about, you can use them for something other than their intended purpose. Starting with some of the very first VCS cartridges, for example, programmers would often rig the playfield to show the score at the top or bottom of the screen.
+For example, some of the TIA registers are dedicated to drawing the "playfield":  Static game backgrounds, often of a single color, such as the court walls in [Video Olympics](https://en.wikipedia.org/wiki/Video_Olympics) and the various mazes and clouds in [Combat](https://en.wikipedia.org/wiki/Combat_(Atari_2600)).
 
-The playfield divides the screen evenly into 40 vertical columns, which can be either set (showing the playfield color) or not set (allowing the background color to "show through"). Actually, you can only *directly* set the left 20 columns. The right half is designed to either repeat (copy) or reflect (mirror) whatever the left side is showing.
+The playfield divides the screen evenly into 40 vertical columns, which can be either set (showing the playfield color) or not set (allowing the background color to "show through").
+
+Actually, you can only *directly* set the left 20 columns. The right half is designed to either repeat (copy) or reflect (mirror) whatever the left side is showing.
 
 To set the pattern of the 20 left-side columns, you simply write values to three registers. Where a bit is 1, the playfield is drawn. Where a bit is 0, it's not:
 
@@ -32,63 +34,64 @@ To set the pattern of the 20 left-side columns, you simply write values to three
     * Draws the final eight columns
     * Bits are "backwards" like PF0
 
-Two other registers control how the playfield pattern is displayed:
+The playfield color is set using `COLUPF`, which works just like the background color register (`COLUBK`).
 
-* `COLUPF` - Playfield Color
-    * Works just like the background color register (`COLUBK`)
-* `CTRLPF` - Playfield Control
-    * Set the first bit to one to turn on mirror/reflection mode
-    * Other bits do other things that we don't need to worry about right now...
-    
+
 ## Wait a Second...
 
 Am I really saying that the playfield just lets you define **vertical columns**? Just solid lines running all the way down the screen?
 
-Technically, yes. That's all it knows how to do: Draw or not draw at certain specific horizontal positions. It's like someone with a rubber stamp, mindlessly stamping the same pattern all the way down a piece of paper.
+Technically, yes. That's all it knows how to do: Draw or not draw at certain specific horizontal positions. It's like a robot with a rubber stamp, mindlessly stamping the same pattern all the way down TV screen.
 
-Displaying anything more complicated than that involves re-setting the registers *very* quickly, while each frame of the screen is being drawn! In other words, you have to wait until the doofus with a rubber stamp raises his arm, then quickly grab the stamp and replace it with a different one before he ever notices.
+Displaying anything more complicated involves writing new values to the registers *very* quickly, while each frame of the screen is being drawn! In other words, you have to wait until the robot is "between stamps" (with its robot arm briefly lifted), then quickly grab the stamp and replace it with a different one before it ever notices.
 
 > **Fun Fact:** Programming graphics on the VCS is really, really weird.
 
 
+## The Code
 
+Since PF1 is the only playfield register that's not "backwards", we'll use that one to display our binary vaue.
+
+First we define a new constant to represent the playfield color.
 
 ```{assembly}
         MyPFCol equ $46
 ```
 
-And later, we're 
+A few lines down, we set that color, similar to setting the background:
+
+```{assembly}
+        lda #MyPFCol
+        sta COLUPF
+```
+
+Finally, we load a value into A and then back out to PF1 pattern register:
+
+```{assembly}
+        lda #%10110111
+        sta PF1
+```
+
 ## Extra Credit
 
-1. As mentioned above, the default behavior for the playfield is to simply copy the left side over onto the right side. But you also have the option to *reflect* a mirror-image of the left side instead, by setting bit zero of the `CTRLPF` (**C**on**TR**o**L P**lay**F**ield) register.
-    * Try it out!
-2. Try loading A with different numbers. (Be sure to use the `#` symbol!)
+1. By default (assuming you've initialized the VCS correctly), the playfield will use "copy" mode and just repeat the left side on the right. Try changing to "reflect" mode by storing a 1 in bit zero of the `CTRLPF` (**C**on**TR**o**L P**lay**F**ield) register.
+2. Try loading A (and thus PF1) with different numbers. Be sure to use the `#` symbol!
     * For example, how does (decimal) 10 look compared to 20? Compared to 5?
     * What does this demonstrate about multiplying and dividing binary numbers by two?
+3. Insert a `nop` (no operation) instruction right before the `jmp`. Using a label, change your `jmp` so that it jumps to the `nop` instead of all the way back up to `LoadA`.
+    * How many times does the program now write to PF1?
+    * Does PF1 "remember" that initial setting, or does it need to be constantly reset?
 
 
 
 ## Review
 
-* Including external files lets you reuse common definitions and macros
-* The `vcs.h` file (for address labels) and `macro.h` file (for commonly-used functions) are the de facto standards for VCS programmers
-* And don't forget these important points from previous discussions:
-    * Simple assignment in assembly is often a two-step process:
-        * Load something into the Accumulator (the A register... our "clipboard")
-        * Then store it back out to its destination
-    * Conditional branching is also a two-step process:
-        * Do some sort of operation (a decrement, a compare, etc.)
-        * Branch based on the *flags* that the operation caused to be set
-    * By default, a "load" instruction will read in data from the address of the value you specify.
-        * If you want it to instead read in that actual value, you have to use the `#` in front of it
-        * Lack of careful attention to this is a common source of bugs
-    * It's typically more efficient and "assembly-like" to loop backwards down to zero rather than up from zero
+* The playfield registers let you draw patterns on the screen and are typically used for game backgrounds
+* Registers PF0 and PF2 are mapped backwards, and only the highest four bits of PF0 are used
+* The pattern you set the playfield registers to is drawn all the way down the screen (for now!)
     
 
-Well that's it for the Bare-Bones Program. (If we refined it any further, we'd have to start calling it "Fancy-Bones"!)
-
-Our next mission is to figure out some way to convey some information to the user. Don't get your hopes up--it won't be much. But at least we won't have a blank screen...
-
+Now that we can display a number, we'll do some simple math next...
 
 
 #### Next example: [rudout2.asm](../rudout/rudout2.md)
