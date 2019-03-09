@@ -14,7 +14,7 @@
 
 		
         ; Define some color constants
-MyBGCol equ $06
+MyBGCol equ $04
 MyPFCol equ $46
 
 
