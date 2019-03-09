@@ -55,6 +55,17 @@ For the `lda` and `sta` instructions themselves, we're taking advantage of the e
 
 Note that we still have to "un-dereference" our color value with the `#`. As a reminder, without it, `lda` would try to load the contents of address `MyBGCol` instead of the actual value of `MyBGCol`.
 
+## Extra Credit
+
+This part is optional, so feel free to skip down to the next section ("Review"). But if you want to dig in a bit more...
+
+1. If you haven't already, try different hex values for `MyBGCOl` and see what affect that has on the displayed color.
+    * Do you notice any difference between, for example, $3C and $3D?
+    * What about between $3C and $3B?
+2. What difference (if any) would it make if you moved your "Start" label to the next instruction (the `sta` instead of the `lda`)?
+3. What if you moved "Start" one more line, to the `jmp` instruction line? Can a `jmp` jump to itself?
+4. Insert a `nop` ("no operation") instruction between the `lda` line and the `jmp' line and move the "Start" label there. Run the program. What does this tell you about the COLUBK register? Does it need to constantly be reloaded with a color value, or does it "remember" that last thing you set it to?
+
 
 ## Review
 
