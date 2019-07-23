@@ -12,7 +12,7 @@ Not much new here. But we are now taking advantage of a couple of handy features
 
 ## Defining Equates
 
-The code starts with a comment, follwed by the `processor` directive we know and love. But then we see this:
+The code starts with a comment, followed by the `processor` directive we know and love. But then we see this:
 
 ```assembly
 ; Create a new label (COLUBK) that "equates" to value $09
@@ -59,7 +59,7 @@ Note that we still have to "un-dereference" our color value with the `#`. As a r
 
 This part is optional, so feel free to skip down to the next section ("Review"). But if you want to dig in a bit more...
 
-1. If you haven't already, try different hex values for `MyBGCOl` and see what affect that has on the displayed color.
+1. If you haven't already, try different hex values for `MyBGCOl` and see what does to the displayed color.
     * Do you notice any difference between, for example, $3C and $3D?
     * What about between $3C and $3B?
 2. What difference (if any) would it make if you moved your "Start" label to the next instruction (the `sta` instead of the `lda`)?
