@@ -4,20 +4,20 @@
 * [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAGUphBP6AQECAwR42KIAiqjKmkjQ%2B6kGhQmpRoUIqbeFDkwT8P8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQeBBcA8ADw "Link to in-browser emulation of bbones1.asm") at 8bitworkshop
 
 
-The VCS has no built-in text display capability, which makes the traditional "Hello, World!" program a surprisingly complicated undertaking. So for now, we're just going to display a single number on the screen. And we're doing to represent that number in **binary**, using vertical lines.
+The VCS has no built-in text display capability, which makes the traditional "Hello, World!" program an absurdly complicated undertaking. So for now, we're just going to display a single number on the screen. And we're doing to represent that number in **binary**, using vertical lines.
 
 Sure, it's not much. But it's easy to do, and it *is* technically output!
 
-> **Fun Fact:** You can think of this as a throwback to early personal computers like the [Altair 8800](http://oldcomputers.net/altair-8800.html). It didn't initially ship with a monitor, so users would commonly read binary output via rows of red LED lights on the front panel.
+> **Fun Fact:** This is sort of a throwback to early personal computers like the [Altair 8800](http://oldcomputers.net/altair-8800.html). It didn't initially ship with a monitor, so users would commonly read output in binary, via rows of red LED lights on the front panel.
 
 
 ## The Playfield
 
 The VCS was originally designed to run the sorts of games that were popular in arcades at the time, in particular, [Pong](https://en.wikipedia.org/wiki/Pong) and [Tank](https://en.wikipedia.org/wiki/Tank_(video_game)). You can plainly see the legacy of those games in the features they decided to put into the TIA video chip.
 
-For example, some of the TIA registers are dedicated to drawing the "playfield":  Static game backgrounds, often of a single color, such as the court walls in [Video Olympics](https://en.wikipedia.org/wiki/Video_Olympics) and the various mazes and clouds in [Combat](https://en.wikipedia.org/wiki/Combat_(Atari_2600)).
+For example, some of the TIA registers are dedicated to drawing the "playfield", which was intended for static game backgrounds, often of a single color, such as the court walls in [Video Olympics](https://en.wikipedia.org/wiki/Video_Olympics) and the various mazes and clouds in [Combat](https://en.wikipedia.org/wiki/Combat_(Atari_2600)).
 
-The playfield divides the screen evenly into 40 vertical columns, which can be either set (showing the playfield color) or not set (allowing the background color to "show through").
+The playfield divides the screen evenly into 40 vertical **columns**, which can be either set (showing the playfield color) or not set (allowing the background color to "show through").
 
 Actually, you can only *directly* set the left 20 columns. The right half is designed to either repeat (copy) or reflect (mirror) whatever the left side is showing.
 
@@ -75,9 +75,11 @@ Finally, we load a value into A and then back out to PF1 pattern register:
 ## Extra Credit
 
 1. By default (assuming you've initialized the VCS correctly), the playfield will use "copy" mode and just repeat the left side on the right. Try changing to "reflect" mode by storing a 1 in bit zero of the `CTRLPF` (**C**on**TR**o**L P**lay**F**ield) register.
-2. Try loading A (and thus PF1) with different numbers. Be sure to use the `#` symbol!
-    * For example, how does (decimal) 10 look compared to 20? Compared to 5?
-    * What does this demonstrate about multiplying and dividing binary numbers by two?
+2. Try loading A (and thus PF1) with different numbers.
+    * Be sure to use the `#` symbol! (What would happen if you didn't?)
+    * For example:
+        * How does (decimal) 10 look when displayed in binary, compared to 20? Compared to 5?
+        * What does this demonstrate about multiplying and dividing binary numbers by two?
 3. Insert a `nop` (no operation) instruction right before the `jmp`. Using a label, change your `jmp` so that it jumps to the `nop` instead of all the way back up to `LoadA`.
     * How many times does the program now write to PF1?
     * Does PF1 "remember" that initial setting, or does it need to be constantly reset?
@@ -88,7 +90,7 @@ Finally, we load a value into A and then back out to PF1 pattern register:
 
 * The playfield registers let you draw patterns on the screen and are typically used for game backgrounds
 * Registers PF0 and PF2 are mapped backwards, and only the highest four bits of PF0 are used
-* The pattern you set the playfield registers to is drawn all the way down the screen (for now!)
+* By default, the playfield consists of columns. The pattern you set the playfield registers to is drawn all the way down the screen (for now!)
     
 
 Now that we can display a number, we'll do some simple math next...
