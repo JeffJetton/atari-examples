@@ -47,9 +47,9 @@ Start   lda #MyBGCol    ; Load a new color value into register A
 
 The processor instructions in our loop haven't really changed much. But we are marking our first `lda` with a label. There's nothing special about the word `Start`. We could've called it `Begin` or `RESET` or `Fred` for all the compiler cares.
 
-In this situation the label isn't identifying a value that we provide, but rather the address of a particular location in our code, which the compiler figures out for us. Specifically, we're marking the location of the `lda`--the beginning of our program. We reference this name later in the `jmp` instruction instead of explicitly jumping to `$F000`. We also use the label in the last two lines.
+In this situation the label isn't identifying a value that we provide, but rather the address of a particular location in our code, which the compiler figures out for us. Specifically, we're marking the location of the `lda` instruction at the beginning of our program. We reference this name later in the `jmp` instruction instead of explicitly jumping to `$F000`. We also use the label in the last two lines.
 
-Like the equates, this adds a helpful layer of abstraction. We can change our code origin or add additional code in front of where we want to jump to or start from, but not have to rewrite any of our various destination addresses. The compiler (which, remember, is keeping track of the addresses of every byte it compiles) will take care of everything for us.
+Like the equates, this adds a helpful layer of abstraction. We can change our code origin or add additional code in front of where we want to jump to or start from, but not have to update any destination addresses as a result. The compiler (which, remember, is keeping track of the addresses of every byte it compiles) will take care of everything for us.
 
 For the `lda` and `sta` instructions themselves, we're taking advantage of the equates we defined earlier. We get the same effect as if we directly typed in `lda #$3C` and `sta $09`, but it makes the code a lot easier to work with and read.
 
