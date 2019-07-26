@@ -63,12 +63,12 @@ The color you wind up with for any particular value depends on the type of TV se
 Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step. I'm used to assignment statement looking something like this:
 
 ```Java
-    System.bgColor = myColor;
+    System.bgColor = 255;
 ```
 
 Or mabye this:
 ```Python
-    SetBGColor(myColor)
+    SetBGColor(255)
 ```
 
 But in Assembly World, this simple assignment is a **two-step** process.
@@ -86,7 +86,7 @@ Specifically, in our program:
 
 There is no assembly language instruction that directly loads an arbitrary value into an arbitrary address. While that may seem weird (or even annoying) at first, it’s not too different from using copy and paste on your computer. **Think of the A register as the "clipboard"**. First you copy to the clipboard with `lda`, then you paste from the clipboard with `sta`.
 
-And just as you can paste the same text into your word processing document in multiple places as long as you don’t overwrite what’s on the clipboard with another copy (or cut), you can store the same value into multiple addresses as long as you don’t change what’s in A.
+> **Note:** The A register retains its value after the `sta`, so you can store identical values into multiple addresses, over and over, as long as you don’t change what’s in A. This is similar to how you can paste the same text into a word processing document or spreadsheet in multiple places, just as long as you don’t overwrite what’s on the clipboard with another copy (or cut).
 
 What’s up with the `#` in front of the `$CD`? By default, lda will load the value that’s found at the address you provide. If we typed the instruction as `lda $CE`, without the all-important pound symbol, we would be telling the microprocessor to grab *whatever value happens to be at address `$CE`* and copy that value into A. The pound symbol is shorthand for “don’t look at this address to find the value… use this actual value!”
 
@@ -108,7 +108,7 @@ As you'd probably guess, the result is an endless loop. After we first set the b
 
 On a regular computer, a typical program simply exits to the operating system when it finishes. But here *there is no operating system*! if we didn't include some sort of looping construct here, execution would blithely continue on past the parts of the cartridge ROM that we've explicitly written code for, causing things to quickly get... weird. And not in a good way.
 
-Bottom line: All VCS programs should to implement some sort of main loop.
+Bottom line: **All VCS programs should to implement some sort of main loop**.
 
 ## Lines 6-8
 
@@ -132,9 +132,11 @@ The `.word` code is not a microprocessor instruction, but rather a directive to 
 
 > **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. Instead of `jmp`, we could type `.byte $4C` and get the same compiled program. It sort of defeats the main purpose of using an assembler, but it's possible!
 
-The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to that rude shoulder-tap.
+The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is usually some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to the interruption.
 
 But, as mentioned above, the chip used in the VCS is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. So it doesn't really matter what we put in the last two bytes of address space. We do have to put *something* there though, so we might as well just reiterate the address of the beginning of our main program.
+
+> **Fun Fact:** An analysis of cartridge ROMs shows that only about 30% of commercially-released titles from back in the VCS's heyday seem to have specified an interrupt address.
 
 ## A Quick Review
 
