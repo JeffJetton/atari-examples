@@ -4,7 +4,7 @@
 * [Run in-browser](https://8bitworkshop.com/v3.3.0/embed.html?p=vcs&r=TFpHAAAQAAAAAF8fVxEPAQECAwR42KIAiqjKmkjQ%2B6mIhQlMC%2FD%2FBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHwQfBB8EHgQbBAIA8ADw "Link to in-browser emulation of bbones4.asm") at 8bitworkshop
 
 
-Every VCS program you'll write is going to need to set the background color. And you'll eventually wind up setting other video registers (background patterns, player graphics, etc.) and read from input registers (joystick, reset switch, etc.)
+Practically every VCS program you'll write is going to need to set the background color. And you'll eventually wind up setting other video registers (background patterns, player graphics, etc.) and read from input registers (joystick, reset switch, etc.)
 
 Are you really going to have to figure out the addresses for each of these things and define them in every one of your programs with a bunch of equates?
 
@@ -28,22 +28,27 @@ MyBGCol equ $88
 ```
 There are just a few differences from the previous version:
 
-    * We have two new `include` statements
-    * We no longer have an equate for `COLUBK` (even though we still reference `COLUBK` later in the program)
+* We have two new `include` statements
+* We no longer have an equate for `COLUBK` (even though we still reference `COLUBK` later in the program)
 
 
 ## Choose Your Inclusion
 
 There are (at least) three ways to reference an included file:
 
-1. Just type the name of the file after your `include` instruction. The compiler will look for the file in the current working directory, so you'll have to be sure that copies of your include files exist there.
+1. Just type the name of the file after your `include` instruction. The compiler will look for the file in the current working directory (usually the same location that your source code file is in), so you'll have to be sure that copies of your include files exist there.
 2. Specify the exact path to the include file after the `include`, either as an absolute path or (ideally) relative to the current working directory.
    * Since this particular repository keeps the include files in `_includes`, you could do something like `include ../_includes/vcs.h`, for example.
-   * This saves you from having to fool with multiple copies of your include files.
-3. Use just the file names (as in option #1), but give the directory for your include files as a compile-time option. In dasm, that would look like this:
+   * This saves you from having to fool with multiple copies of your include files. You can just keep one copy of them in one place and have all your source code files look there.
+   * But it does mean you have to edit your source code files if you ever decide to move your include file location.
+3. Add an `incdir` instruction before your `include` instructions, which adds a directory to dasm's list of places to look when it tries to find your include files.
+   * Example: `incdir "../"`
+   * Same drawback as option #2: You have to update all your source code files if you ever move your include file directory.
+4. Use just the file names (as in option #1), but give the directory for your include files as a compile-time option. In dasm, that would look like this:
    * `dasm mygame.asm -f3 -omygame.bin -I../_includes`
+   * More of a pain when compiling the program, but more flexible overall.
    
-The examples in this project do not specify paths in the `include` statements, so you'll have to either use methods 1 or 3, or edit the code to add the path in.
+The examples in this project do not specify paths in the `include` statements or set a search directory using `incdir`, so you'll have to either use methods 1 or 4, or edit the code to accomodate methods 2 or 3.
 
 (If you're using [8bitworkshop](https://8bitworkshop.com/), the two standard include files are always available in your "virtual" working directory, so you don't need to specify a path.)
 
