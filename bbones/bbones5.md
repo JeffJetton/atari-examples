@@ -34,7 +34,7 @@ There are just a few differences from the previous version:
 
 ## Choose Your Inclusion
 
-There are (at least) three ways to reference an included file:
+There are (at least) four ways to reference an included file:
 
 1. Just type the name of the file after your `include` instruction. The compiler will look for the file in the current working directory (usually the same location that your source code file is in), so you'll have to be sure that copies of your include files exist there.
 2. Specify the exact path to the include file after the `include`, either as an absolute path or (ideally) relative to the current working directory.
