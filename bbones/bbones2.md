@@ -65,6 +65,7 @@ This part is optional, so feel free to skip down to the next section ("Review").
 2. What difference (if any) would it make if you moved your "Start" label to the next instruction (the `sta` instead of the `lda`)?
 3. What if you moved "Start" one more line, to the `jmp` instruction line? Can a `jmp` jump to itself?
 4. Insert a `nop` ("no operation") instruction between the `lda` line and the `jmp' line and move the "Start" label there. Run the program. What does this tell you about the COLUBK register? Does it need to constantly be reloaded with a color value, or does it "remember" that last thing you set it to?
+5. What do you think would happen if you forgot to include the last three lines (from `org $FFFC` on)? Will it run? Will it even compile? Try it (using an emulator!) and see.
 
 
 ## Review
