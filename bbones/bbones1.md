@@ -19,9 +19,9 @@ Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") 
         org  $F000
 ```
 
-The first two lines are instructions to the compiler and don’t generate any actual code that will be run on the VCS. These sorts of instructions are often called pseudo-ops (literally, “fake operations”).
+The first two lines are "pseudo-ops"--instructions for the compiler itself rather than the microprocessor. They don’t generate any actual code that will be run on the VCS.
 
-In assembly code, you typically indent your instructions by some consistent number of spaces. Many compilers require at least one space, but you'll want more than that (eight is common) to leave room for the descriptive labels that we'll eventually add.
+In assembly code, you typically indent your instructions by some consistent number of spaces. Many compilers require at least onused to asse space, but you'll want more than that (eight is common) to leave room for the descriptive labels that we'll eventually add.
 
 The `processor` instruction tells the compiler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand.
 
@@ -60,7 +60,7 @@ The color you wind up with for any particular value depends on the type of TV se
 
 > **Fun Fact:** Most VCS emulators can display video using at least the NTSC and PAL standards, and they'll usually give you a way to switch between them. Many will even attempt to figure out what standard the cartridge being run was written for and automatically switch to it for you. This example program is so basic, it will almost certainly throw off that sort of automatic detection. So you might see a message like "AUTO: FAILED", and it will default to one or the other.
 
-Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step. I'm used to assignment statement looking something like this:
+Anyway, I don’t know about you, but the high-level-language programmer part of me instinctively wants to put a color value into that background color register address in one step. I'm used to assignment statements looking something like this:
 
 ```Java
     System.bgColor = 255;
@@ -75,7 +75,7 @@ But in Assembly World, this simple assignment is a **two-step** process.
 
 On the 6502 chip itself are a few specialized, internal storage areas called *registers*. The main register is the *Accumulator*, often just called "A". It only holds one byte, but it's where most of the work is done.
 
-To assign a value to an address, we must use A as a temporary holding tank for the value:
+To assign a specific value to an address, we must use one of the registers as a temporary holding area for the value:
 
 * `lda` (load A) means "load the Accumulator register (A) with this next value"
 * `sta` (store A) means "write whatever’s in the Accumulator to the following address"
@@ -88,7 +88,7 @@ There is no assembly language instruction that directly loads an arbitrary value
 
 > **Note:** The A register retains its value after the `sta`, so you can store identical values into multiple addresses, over and over, as long as you don’t change what’s in A. This is similar to how you can paste the same text into a word processing document or spreadsheet in multiple places, just as long as you don’t overwrite what’s on the clipboard with another copy (or cut).
 
-What’s up with the `#` in front of the `$CD`? By default, lda will load the value that’s found at the address you provide. If we typed the instruction as `lda $CE`, without the all-important pound symbol, we would be telling the microprocessor to grab *whatever value happens to be at address `$CE`* and copy that value into A. The pound symbol is shorthand for “don’t look at this address to find the value… use this actual value!”
+What’s up with the `#` in front of the `$CD`? By default, `lda` will interpret the number after it as an address to refer to, not as a raw value in and of itself. If we typed the instruction as `lda $CE`, without the all-important pound symbol, we would be telling the microprocessor to grab *whatever value happens to be at address `$CE`* and copy that value into A. The pound symbol changes that interpretation. It's shorthand for “don’t look at this address to find the value... use this actual value!”
 
 (If you've wrangled pointers or references in languages like C, you can think of the arguments in assembly as being dereferenced by default. The `#` turns off the dereferencing.)
 
@@ -122,7 +122,7 @@ We wind everything up with another “origin” command, followed by two identic
 
 Wait, didn’t we already set the address origin? Why do it again? To a different address?
 
-It’s because the first thing the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the highest portion of memory it can address.
+It’s because one of the first things the 6502 (and, by extension, the 6507 chip used in the VCS) does when it is powered on, or after it is reset, is try to pull in data from the highest portion of memory it can address.
 
 The bytes found at addresses `$FFFC` and `$FFFD` are combined together into a single, two-byte value (four hexadecimal digits) that tells the chip the address at which it should look to start executing the main portion of code. We know, of course, that it's found at address `$F000`, since we explicitly set it there with our first `org` instruction.
 
