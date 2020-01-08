@@ -95,5 +95,7 @@ Finally, we load a value into A and then back out to PF1 pattern register:
 
 Now that we can display a number, we'll do some simple math next...
 
+(This is a work-in-progress, and I don't have documentation written up for the remaining examples just yet. But feel free to take a look at the code files in the meantime--the comments explain a lot already!)
 
-#### Next example: [rudout2.asm](../rudout/rudout2.md)
+
+#### Next example: [rudout2.asm](../rudout/rudout2.asm)
