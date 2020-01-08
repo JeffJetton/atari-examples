@@ -49,7 +49,7 @@ The processor instructions in our loop haven't really changed much. But we are m
 
 In this situation the label isn't identifying a value that we provide, but rather the address of a particular location in our code, which the compiler figures out for us. Specifically, we're marking the location of the `lda` instruction at the beginning of our program. We reference this name later in the `jmp` instruction instead of explicitly jumping to `$F000`. We also use the label in the last two lines.
 
-Like the equates, this adds a helpful layer of abstraction. We can change our code origin or add additional code in front of where we want to jump to or start from, but not have to update any destination addresses as a result. The compiler (which, remember, is keeping track of the addresses of every byte it compiles) will take care of everything for us.
+Like the equates, this adds a helpful layer of abstraction. We can change our code origin or add additional code in front of where we want to jump to or start from, but not have to update any destination addresses as a result. The assembler (which, remember, is keeping track of the addresses of every byte of machine code it creates) will take care of everything for us.
 
 For the `lda` and `sta` instructions themselves, we're taking advantage of the equates we defined earlier. We get the same effect as if we directly typed in `lda #$3C` and `sta $09`, but it makes the code a lot easier to work with and read.
 
@@ -65,7 +65,7 @@ This part is optional, so feel free to skip down to the next section ("Review").
 2. What difference (if any) would it make if you moved your "Start" label to the next instruction (the `sta` instead of the `lda`)?
 3. What if you moved "Start" one more line, to the `jmp` instruction line? Can a `jmp` jump to itself?
 4. Insert a `nop` ("no operation") instruction between the `lda` line and the `jmp' line and move the "Start" label there. Run the program. What does this tell you about the COLUBK register? Does it need to constantly be reloaded with a color value, or does it "remember" that last thing you set it to?
-5. What do you think would happen if you forgot to include the last three lines (from `org $FFFC` on)? Will it run? Will it even compile? Try it (using an emulator!) and see.
+5. What do you think would happen if you forgot to include the last three lines (from `org $FFFC` on)? Will it run? Will it even assemble without errors? Try it (using an emulator!) and see.
 
 
 ## Review

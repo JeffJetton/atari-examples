@@ -10,7 +10,7 @@ Are you really going to have to figure out the addresses for each of these thing
 
 Nope! VCS programmers typically use a common "include" file that already has every VCS register defined and given a standard label. It's similar to the sort of standard header files you might use in a language like C or C++.
 
-By using the `include` pseudo-op, you can instruct the compiler to automatically *include* the definitions in that file in your program, just as if you typed them in yourself.
+By using the `include` pseudo-op, you can instruct the assembler to automatically *include* the definitions in that file in your program, just as if you typed them in yourself.
 
 That's what's going in in the first part of our program:
 
@@ -34,9 +34,9 @@ There are just a few differences from the previous version:
 
 ## Choose Your Inclusion
 
-There are (at least) four ways to reference an included file:
+If you're using dasm for your assembler, there are (at least) four ways to reference an included file:
 
-1. Just type the name of the file after your `include` instruction. The compiler will look for the file in the current working directory (usually the same location that your source code file is in), so you'll have to be sure that copies of your include files exist there.
+1. Just type the name of the file after your `include` instruction. The assembler will look for the file in the current working directory (usually the same location that your source code file is in), so you'll have to be sure that copies of your include files exist there.
 2. Specify the exact path to the include file after the `include`, either as an absolute path or (ideally) relative to the current working directory.
    * Since this particular repository keeps the include files in `_includes`, you could do something like `include ../_includes/vcs.h`, for example.
    * This saves you from having to fool with multiple copies of your include files. You can just keep one copy of them in one place and have all your source code files look there.
@@ -44,9 +44,9 @@ There are (at least) four ways to reference an included file:
 3. Add an `incdir` instruction before your `include` instructions, which adds a directory to dasm's list of places to look when it tries to find your include files.
    * Example: `incdir "../"`
    * Same drawback as option #2: You have to update all your source code files if you ever move your include file directory.
-4. Use just the file names (as in option #1), but give the directory for your include files as a compile-time option. In dasm, that would look like this:
+4. Use just the file names (as in option #1), but give the directory for your include files as a command-line option. In dasm, that would look like this:
    * `dasm mygame.asm -f3 -omygame.bin -I../_includes`
-   * More of a pain when compiling the program, but more flexible overall.
+   * More of a pain when building the program, but more flexible overall.
    
 The examples in this project do not specify paths in the `include` statements or set a search directory using `incdir`, so you'll have to either use methods 1 or 4, or edit the code to accomodate methods 2 or 3.
 
@@ -80,13 +80,13 @@ CTRLPF      ds 1    ; $0A   00xx 0xxx   Control Playfield, Ball, Collisions
 Rather than specifying the exact address value for each label, as we've been doing for our own equates, the technique used in `vcs.h` is a bit more flexible:
 
 * It sets an origin address using `org`, in a similar fashion to how we've been doing it in our own program. (The `TIA_BASE_WRITE_ADDRESS`, defined earlier in the file, is zero by default, so our origin starts at address $00.)
-* The statements then only specify *size* of each address being defined. The compiler keeps track of which address each of these will correspond to.
+* The statements then only specify *size* of each address being defined. The assembler keeps track of which address each of these will correspond to.
     * `ds` means "define space"
     * The number after it gives the amount of space, in bytes
-    * By the time the compiler gets to the `COLUBK` label we know and love, it knows to assign it to the next available byte, which is `$09`
-    * (The comments on each line also show the resulting address, but that was put there by the creaters of the file, for human readability. The compiler didn't generate that and doesn't pay attention to it.)
+    * By the time the assembler gets to the `COLUBK` label we know and love, it knows to assign it to the next available byte, which is `$09`
+    * (The comments on each line also show the resulting address, but that was put there by the creators of the file, for human readability. The assembler doesn't pay any attention to it.)
 * The whole thing is kicked off with a `seg.u` instruction. **This is very important!**
-    * It tells the compiler that the following is an "uninitialized segment"
+    * It tells the assembler that the following is an "uninitialized segment"
     * That is, the bytes being labeled are *mere definintions*., used only for reference by our program. These definitions, by themselves, will not generate any machine code or create any data in the output .bin file.
     
 Of course, you don't *have* to use `vcs.h`. There's nothing stopping you from creating your own file and even using different labels for all the addresses. But `vcs.h` has become the de facto standard for VCS programmers for many years, and the address names have been standard [since at least 1979](https://archive.org/details/StellaProgrammersGuide).
@@ -120,9 +120,9 @@ Amazingly, it manages to do all this using two fewer bytes that the bbones4 init
 
 ## Extra Credit
 
-1. If you're using dasm, add the `-s` option when you compile this program.
+1. If you're using dasm, add the `-s` option when you build this program.
     * For example: `dasm bbones5.asm -f3 -obbones5.bin -sbbones5.sym`
-    * This generates a **symbol file**, showing the values of every label (symbol) encountered by the compiler, in both your main .asm file and any included files. It also shows whether the symbol actually wound up being referenced in the final program.
+    * This generates a **symbol file**, showing the values of every label (symbol) encountered by the assembler, in both your main .asm file and any included files. It also shows whether the symbol actually wound up being referenced in the final program.
     * Open the file with any text editor to verify that the `vcs.h` labels wound up getting assigned the address that the comments say they would. Which ones did our program refer to?
     * Are the symbols we used in the main program (`MyBGCol`, `Start`, and `SetTIA`) there? Do they have the values you'd expect them to have?
 2. Create a version of `vcs.h` that is missing the line with the `seg.u` instruction and include this file in your program instead of the normal version.

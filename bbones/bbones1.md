@@ -19,21 +19,21 @@ Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") 
         org  $F000
 ```
 
-The first two lines are "pseudo-ops"--instructions for the compiler itself rather than the microprocessor. They don’t generate any actual code that will be run on the VCS.
+The first two lines are "pseudo-ops"--instructions for the assembler itself rather than the microprocessor. These instructions don’t generate any actual code that will be run on the VCS.
 
-In assembly code, you typically indent your instructions by some consistent number of spaces. Many compilers require at least onused to asse space, but you'll want more than that (eight is common) to leave room for the descriptive labels that we'll eventually add.
+In assembly code, you typically indent your instructions by some consistent number of spaces. Many assemblers require at least one space, but you'll want more than that (eight is common) to leave room for the descriptive labels that we'll eventually add.
 
-The `processor` instruction tells the compiler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand.
+The `processor` instruction tells the assembler that the code we’re writing is meant to be run on a MOS Technologies 6502 microprocessor chip. Or, more correctly, that it’s meant to be run on any chip that can understand the same set of instructions that the 6502 was designed to understand.
 
 > **Fun Fact:** The production version of the Atari VCS actually used the less-expensive 6507 chip, which is basically the 6502 in a smaller form with fewer pins, and thus with certain capabilities blocked from use. Nonetheless, the 6507 can read and at least attempt to carry out any code the 6502 can, even if some of the instructions don’t wind up doing anything. (Think of the 6507 like an automated power strip that has tape over some of the outlets. It can still respond to commands to switch any of the outlets on and off, even if you can't plug a lamp into all of them.)
 
-The `org` pseudo-op sets the *origin* address of the code that follows. When the assembler compiles your code, it constantly keeps track of the destination address of each byte of compiled code. By which I mean the address that *the system running the code* will use to find each particular byte. I used italics because that’s an important distinction! While the first instruction in our code will actually live in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the VCS will actually see it as the 61,441st byte in its world. Which means that the VCS will have to use address `$F000` to access that so-called "first" byte, due to the way the cartridge ROM is mapped. By setting our origin to `$F000`, we let the compiler know the address at which the next bit of code will ultimately be found by the microprocessor, and subsequently where all the following bits of code will wind up too. (We’ll soon see why that’s important...)
+The `org` pseudo-op sets the *origin* address of the code that follows. When the assembler converts your program to machine code, it constantly keeps track of the destination address of each byte of assembled code. By which I mean the address that *the system running the code* will use to find each particular byte. I used italics because that’s an important distinction! While the first instruction in our code will actually live in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the VCS will actually see it as the 61,441st byte in its world. Which means that the VCS will have to use address `$F000` to access that so-called "first" byte, due to the way the cartridge ROM is mapped. By setting our origin to `$F000`, we let the assembler know the address at which the next bit of code will ultimately be found by the microprocessor, and subsequently where all the following bits of code will wind up too. (We’ll soon see why that’s important...)
 
 By the way, I put a blank line between those two lines of code, but that’s just for clarity. You don’t have to separate them like that.
 
 ## Let’s Address the Topic of Addresses
 
-If you’re new to assembler but have programmed in higher-level languages, you might be used to thinking of **addresses** as referring to memory locations in RAM somwhere.
+If you’re new to assembly language but have programmed in higher-level languages, you might be used to thinking of **addresses** as referring to memory locations in RAM somwhere.
 
 To an extent, it can work that way on the VCS too. Addresses can indeed refer to some sort of memory. It’s not entirely straightforward, since that memory might reside in either RAM (on the 2600 itself) or ROM (in the cartridge), but hey... memory is memory, right? We’re still operating in a zone of some comfort here.
 
@@ -128,9 +128,9 @@ The bytes found at addresses `$FFFC` and `$FFFD` are combined together into a si
 
 By updating our origin to `$FFFC` in the code, we're telling the compiler that the next byte it "assembles" for us should live at that address location. Remember that it knows where the *first* instruction was supposed to live (due to the first `org` we used), and it has been quietly keeping track of the locations of every byte it has assembled since then. This second `org` will cause it to generate as many new bytes as it needs to (all with value of zero) so that the *next* bytes start where we tell it at `$FFFC`. Thus, we ensure that the reset address we specify winds up exactly where it should be.
 
-The `.word` code is not a microprocessor instruction, but rather a directive to the compiler to just write the following word (two-byte value) to the assembled binary file "as is". You can also specify single bytes with the (you guessed it!) `.byte` directive.
+The `.word` code is not a microprocessor instruction, but rather a directive to the assembler to just write the following word (two-byte value) to the assembled binary file "as is". You can also specify single bytes with the (you guessed it!) `.byte` directive.
 
-> **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. Instead of `jmp`, we could type `.byte $4C` and get the same compiled program. It sort of defeats the main purpose of using an assembler, but it's possible!
+> **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. Instead of `jmp`, we could type `.byte $4C` and get an identical binary file. It sort of defeats the main purpose of using an assembler, but it's possible!
 
 The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is usually some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to the interruption.
 
@@ -140,7 +140,7 @@ But, as mentioned above, the chip used in the VCS is a “feature limited” ver
 
 ## A Quick Review
 
-* Out of the eight lines of code in this program, most are just instructions to the compiler:
+* Out of the eight lines of code in this program, most are just instructions to the assembler:
    * We tell it what microprocessor family we're targeting
    * We then tell it the expected address of the first byte of instructions
    * Finally, we wind up with a couple of words of special address data, which we have it place at the very end of address space for us
@@ -151,6 +151,6 @@ But, as mentioned above, the chip used in the VCS is a “feature limited” ver
 
 Pretty simple, eh? 
 
-Next, we'll take advantage of some compiler features to spiff up our code a little bit!
+Next, we'll take advantage of some assembler features to spiff up our code a little bit!
 
 #### Next example: [bbones2.asm](./bbones2.md)
