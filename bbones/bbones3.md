@@ -49,22 +49,24 @@ Also notice that we’re not “storing” X in the stack pointer, but rather �
 
 ## Initializing the "Zero-Page"
 
-Due to the way the VCS maps all of its address locations, the various TIA registers, RAM areas, etc. that we need to clear out all happen to be found in the first 256 bytes of addressable space. Lucky for us, this "zero-page" (where a *page*, in this case, is a block of 256 bytes) can be handled very efficiently by the 6502 family.
+Due to the way the VCS maps all of its address locations, the various TIA registers, RAM areas, etc. that we need to clear out all happen to be found in the first 256 bytes of address space. Lucky for us, this "zero-page" area can be handled very efficiently by the 6502 family.
 
-For our first stab at this, we'll use an approach similar to what you're probably used to in a high-level langauage. (Spoiler alert: We'll rewrite this in the next version.)
+> Fun Fact: A *page* is any of the contiguous, 256-byte blocks that divide up the 6502's available address space.
 
-The basic steps (for now) are sort of like a FOR loop or a WHILE loop:
+For our first stab at this, we'll use an approach similar to what you're probably used to in a high-level langauage. This is **not** the most efficient way to do this. (Spoiler alert: We'll rewrite it in the next example. Bear with me until then!)
+
+The basic steps are sort of like a FOR loop or a WHILE loop:
 
 1. Keep track of the current address location, starting at address zero.
 2. Write a zero to wherever our current address location is.
 3. Increment our current address to the next location.
-4. Have we gotten to the top (i.e., address $FF)?
+4. Have we gotten to the top (i.e., address $FF, which is 256 in hexadecimal)?
    * If so, exit the loop
    * If not, go to step 2
 
-Note that the 6502 registers that we can use to keep track of our current address are only 8-bits in size. So we can't stop our loop when we *exceed* $FF. $FF is the largest value it can hold--we'll never get any higher than that. So we have to stop our loop when we *equal* $FF.
+Note that the A, X, and Y registers are each only 8-bits in size. So $FF is the largest value they can hold. If you try to bump them up one higher, they'll just roll back over to zero rather than wind up at $100.
 
-Yes, that means we'll have one last step to do, where we clear out that last address at $FF.
+So for now, we'll stop our loop when our target address *equals* $FF rather than *exceeds* it. As you might have already figured out, this will leave the final byte uninitialized by the loop, so we'll need one more instruction at the end to fix that.
 
 The assembly-language version of these steps looks like this:
 
@@ -72,36 +74,38 @@ The assembly-language version of these steps looks like this:
         ldx #0 
         ldy #0
         
-Init    sty  0,x
+Init    sty 0,x
+
         inx
-        
-        txa
-        cmp #$FF
-        bne  Init
+
+        cpx #$FF
+        bne Init
         
         sty $FF
 ```
 
-We're using the X register as our address pointer. Y just holds the zero that we'll write to the zero-page.
+We're using the X register as our address pointer. The X and Y registers are designed to be *index registers*, and often used in cases like this, where we want to iterate or count over a range of values.
 
-At the beginning of the `Init` loop, we store the contents of Y (which is always zero) to wherever X is pointing. Well, actually we're writing it to address "zero plus X". There is no 6502 assembly instruction that simply stores a value to address X directly. But we can use X as an offset to some constant address. In this case, our constant is zero, so it's effectively a "store Y in address X" instruction when all is said and done.
+Y just holds the zero that we'll write to the zero-page. It's our "clipboard" this time. We could've just as easily used the A register instead. No real significance in going with Y here. Just mixing things up a bit!
 
-Next we check to see if we need to exit the loop. There is no "IF" statement in assembly. Like just about everything else in assembly, this simple "IF" logic takes multiple steps:
+At the beginning of the `Init` loop, we store the contents of Y (which we're keeping at zero) to wherever X is pointing. Well, actually we're writing it to address "zero plus X". There is no 6502 assembly instruction that simply stores a value to address X directly. But we can use X as an offset to some constant address. In this case, our constant is zero, so it's effectively a "store Y in address X" instruction when all is said and done.
 
-1. Compare the contents of A to some value
+Next we check to see if we need to exit the loop, depending on whether or not X has made it to $FF yet. In assembly, this sort of general-purpose "IF-THEN" operation takes two steps:
+
+1. Compare the contents of a register to some value
 1. Do something based on what the results of that comparison were
 
-So that's what we do. We can't do a comparison on the X register--only the A register. So we first have to **T**ransfer **X** to **A**.
-
-Then we execute our comparison. This doesn't change any normal register contents, but it does set some "flags" (think of them as global boolean variables) on the chip. These flags keep track of whether the most-recent math operation resulted in a zero, or in a negative number, and/or caused a mathematical "carry" to occur, and a few other things like that.
+So that's what we do. The `CPX` **C**om**P**ares **X** to the hex value $FF. This doesn't change any normal register contents, but it does set some "flags" (think of them as global boolean variables) on the chip. These **status flags** keep track of whether the most-recent math operation resulted in a zero, or in a negative number, and/or caused a mathematical "carry" to occur, and a few other things like that.
 
 Finally, we check the result of the comparison (by looking at whatever flags are now set) and act accordingly. In this case, we do a **B**ranch if the previous comparison found that the two values were **N**ot **E**qual. That keeps our loop running until X equals $FF.
 
+To put it another way, conditional branching in assembly is similar to the "IF-THEN" process you're familiar with, except the "IF" part always involves one of the status flags. You can't *directly* branch based on, for example, what X does or doesn't equal, or is greater or less than. But you can do something to X (like a compare operation) that just so happens to set one or more of the status flags as a side-effect. You then branch based on one of those flags.
+
+> **Note:** The comparison is actually a subtraction that throws away the result. If the values being compared (the contents of X and whatever value is being used as an argument to the `cpx` instruction) are equal, then the subtraction operation results in a zero, which flips on the zero flag. If the values are different, the subtraction will *not* result in a zero (thus turning *off* the zero flag) but might do other things such as set the negative flag or the carry flag. The `bne` instruction just has to look at the zero flag to know whether to branch or not.
+
 We wrap up with one last store of Y into the highest address of the zero-page (since the loop would've missed it).
 
-> **Note:** The comparison is actually a subtraction that throws away the result. If the values being compared (the contents of A and whatever value is being used as an argument to the `cmp` instruction) are equal, then the subtraction operation results in a zero, which flips on the zero flag. If the values are different, the subtraction will *not* result in a zero (thus turning *off* the zero flag) but might do other things such as set the negative flag or the carry flag. The `bne` instruction just has to look at the zero flag to know whether to branch or not.
-
-The code in this init routine takes up 14 bytes of ROM and take over 3,000 cycles to execute. Not bad--but **we can do better!** Stay tuned...
+The code in this init routine takes up 13 bytes of ROM and take almost 3,000 cycles (about 2.5 milliseconds) to execute. Not bad--but **we can do better!** Stay tuned...
 
 
 
