@@ -31,19 +31,21 @@ Start   sei         ; Prevent interrupts
         ldy #0      ; Put a zero in Y. This is the zero
                     ; we'll use to clear out addresses.
         
-Init    sty  0,x    ; Store Y's zero into 0 offset by X
+Init    sty 0,x     ; Store Y's zero into 0 offset by X
                     ; (We can't just sty x... it has to
                     ; be X relative to a base value)
-        inx         ; Increment X
-        
-        txa         ; Put current value of X into A
-        cmp #$FF    ; And compare it our end value
+        inx         ; Increment X to next address
+
+                    ; Is x at the end yet?
+        cpx #$FF    ; Compare it the value $FF
         bne  Init   ; Branch (if that comparison
                     ; resulted in) Not Equal
         
-        sty 0      ; Final zero in the last address
-        
-        ; Init section takes 14 bytes and 3,067 cycles
+                    ; If x is equal to $FF, we don't branch
+                    ; and drop down to here instead
+        sty 0       ; Final zero in that last address
+
+        ; Init section takes 13 bytes and 2,882 cycles
 
 
 ; Set up the graphics, such as they are...
