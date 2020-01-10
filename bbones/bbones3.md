@@ -49,7 +49,7 @@ Also notice that we’re not “storing” X in the stack pointer, but rather �
 
 ## Initializing the "Zero-Page"
 
-Due to the way the VCS maps all of its address locations, the various TIA registers, RAM areas, etc. that we need to clear out all happen to be found in the first 256 bytes of address space. Lucky for us, this "zero-page" area can be handled very efficiently by the 6502 family.
+Due to the way the VCS maps all of its address locations, the various TIA registers, RAM areas, etc. that we need to clear out all happen to be found in the first 256 bytes of address space, from $0000 to $00FF. Lucky for us, this "zero-page" area can be handled very efficiently by the 6502 family.
 
 > Fun Fact: A *page* is any of the contiguous, 256-byte blocks that divide up the 6502's available address space.
 
@@ -60,7 +60,7 @@ The basic steps are sort of like a FOR loop or a WHILE loop:
 1. Keep track of the current address location, starting at address zero.
 2. Write a zero to wherever our current address location is.
 3. Increment our current address to the next location.
-4. Have we gotten to the top (i.e., address $FF, which is 256 in hexadecimal)?
+4. Have we gotten to the top (i.e., address $FF)?
    * If so, exit the loop
    * If not, go to step 2
 
