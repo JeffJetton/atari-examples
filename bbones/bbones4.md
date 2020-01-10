@@ -45,9 +45,9 @@ Init    sta  0,x    ; Put A's zero into address $00 + X
         sta  $00    ; A final zero into address $00
 ```
 
-Notice that we no longer need any sort of "compare" step now. We also don't need the step of transferring the contents of X into A in order to do the comparison. That saves five bytes of code.
+Notice that we no longer need any sort of "compare" step now. And, since X is already set to $FF by the earlier code, we don't need to initialize it for the loop. That all saves four bytes of code.
 
-Wait, really? All that trouble for five measly bytes? 
+Wait, really? All that trouble for four measly bytes? 
 
 Hey, don't knock it! When you're facing the memory contraints of the VCS, those five bytes are considered a pretty big win!
 
