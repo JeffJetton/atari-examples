@@ -9,8 +9,7 @@ Here’s an extremely basic program. How basic? It just displays a single color,
 
 But for a first program, it’ll do.
 
-Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") piece-by-piece and talk about what’s going on...
-
+Let’s walk through [the code](./bbones1.asm "Code for Bare-Bones Program #1") piece-by-piece and talk about what’s going on. This will be a pretty long explanation for such a short program, but we're going to cover some absolutely crucial fundamentals. I promise it will be worth it!
 ## Lines 1 and 2
 
 ```assembly
@@ -27,7 +26,9 @@ The `processor` instruction tells the assembler that the code we’re writing is
 
 > **Fun Fact:** The production version of the Atari VCS actually used the less-expensive 6507 chip, which is basically the 6502 in a smaller form with fewer pins, and thus with certain capabilities blocked from use. Nonetheless, the 6507 can read and at least attempt to carry out any code the 6502 can, even if some of the instructions don’t wind up doing anything. (Think of the 6507 like an automated power strip that has tape over some of the outlets. It can still respond to commands to switch any of the outlets on and off, even if you can't plug a lamp into all of them.)
 
-The `org` pseudo-op sets the *origin* address of the code that follows. When the assembler converts your program to machine code, it constantly keeps track of the destination address of each byte of assembled code. By which I mean the address that *the system running the code* will use to find each particular byte. I used italics because that’s an important distinction! While the first instruction in our code will actually live in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the VCS will actually see it as the 61,441st byte in its world. Which means that the VCS will have to use address `$F000` to access that so-called "first" byte, due to the way the cartridge ROM is mapped. By setting our origin to `$F000`, we let the assembler know the address at which the next bit of code will ultimately be found by the microprocessor, and subsequently where all the following bits of code will wind up too. (We’ll soon see why that’s important...)
+The `org` pseudo-op sets the *origin* address of the code that follows. When the assembler converts your program to machine code, it constantly keeps track of the destination address of each byte of assembled code. By which I mean the address that *the system running the code* will use to find each particular byte. I used italics because that’s an important distinction!
+
+You see, cartridges are "loaded" up into the top area of addressable memory. So, while the first instruction in our code will exist in the very first byte of the assembled file (and, at least virtually, in the first byte of the cartridge’s ROM), the VCS will actually see it as the 61,441st byte in its world. It will have to use address `$F000` to access that so-called "first" byte. By setting our origin to `$F000`, we let the assembler know the address at which the next bit of code will ultimately be found by the microprocessor, and subsequently where all the following bits of code will wind up too. (We’ll soon see why that’s important...)
 
 By the way, I put a blank line between those two lines of code, but that’s just for clarity. You don’t have to separate them like that.
 
@@ -43,7 +44,7 @@ On the VCS, some addresses are *mapped* (connected), to memory (ROM and RAM) and
 
 Let that sink in a bit.
 
-I don't give it a second thought now, and maybe it's obvious to you right off the bat. But for me, when I was starting out, this idea of addresses referring to things other tham memory took a bit of getting used to.
+I don't give it a second thought now, and maybe it's obvious to you right off the bat. But for me, when I was starting out, this idea of addresses referring to things other than standard memory took a bit of getting used to.
 
 ## Lines 3 and 4
 
@@ -81,6 +82,7 @@ To assign a specific value to an address, we must use one of the registers as a 
 * `sta` (store A) means "write whatever’s in the Accumulator to the following address"
 
 Specifically, in our program:
+
 * `lda #$CE`    <- Put the value `$CE` into A
 * `sta $09`    <- Copy what's in A (which is still `$CE`) into address `$09`
 
@@ -92,7 +94,7 @@ What’s up with the `#` in front of the `$CD`? By default, `lda` will interpret
 
 (If you've wrangled pointers or references in languages like C, you can think of the arguments in assembly as being dereferenced by default. The `#` turns off the dereferencing.)
 
-> **Note:** The difference between specifying a direct *value* for an operation and specifying an *address* for an operation is important thing to remember! Lots of frustrating bugs are due to leaving out a`#` or not having one where it should be.
+> **Note:** The difference between specifying a direct *value* for an operation and specifying an *address* for an operation is important thing to remember! Many (heck, maybe most) of the bugs you'll run into will be due to leaving out a`#` or not having one where it should be.
 
 ## Line 5
 
@@ -132,7 +134,7 @@ The `.word` code is not a microprocessor instruction, but rather a directive to 
 
 > **Fun Fact:** We could, in fact, write any of the actual microprocessor instructions in a similar fashion if we knew the machine code byte values that the operations corresponded to. Instead of `jmp`, we could type `.byte $4C` and get an identical binary file. It sort of defeats the main purpose of using an assembler, but it's possible!
 
-The last two bytes, at `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is usually some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to the interruption.
+The last two bytes, which will appear at addresses `$FFFE` and `$FFFF`, combine to form another target address. This tells the chip where it should jump to in the case of an event known as an *interrupt*. An interrupt is usually some external bit of hardware tapping the processor on the shoulder and literally “interrupting” the execution of whatever program code that happens to be running at that time. Normally, the chip would respond by jumping to this special interrupt address, where it would presumably find instructions on how to respond to the interruption.
 
 But, as mentioned above, the chip used in the VCS is a “feature limited” version of the 6502. It doesn’t have a pin on the external body of the chip for the interrupt signal to come in on, nor are there the proper connections within the circuitry of the chip itself that would allow it to notice such a signal even if the pin were there. So it doesn't really matter what we put in the last two bytes of address space. We do have to put *something* there though, so we might as well just reiterate the address of the beginning of our main program.
 
